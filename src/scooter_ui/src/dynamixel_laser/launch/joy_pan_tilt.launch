@@ -1,0 +1,32 @@
+<launch>
+    <!-- Start the manager with controllers for my motors -->
+    <node name="dynamixel_manager" pkg="dynamixel_controllers" type="controller_manager.py" required="true" output="screen">
+        <rosparam>
+            namespace: dxl_manager
+            serial_ports:
+                pan_tilt_port:
+                    port_name: "/dev/ttyUSB1"
+                    baud_rate: 57600
+                    min_motor_id: 1
+                    max_motor_id: 2
+                    update_rate: 10
+        </rosparam>
+    </node>
+
+    <!-- Start tilt joint controller -->
+    <rosparam file="$(find dynamixel_laser)/pan-tilt.yaml" command="load"/>
+    <node name="tilt_controller_spawner" pkg="dynamixel_controllers" type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port pan_tilt_port
+                tilt_controller"
+          output="screen"/>
+    <node name="pan_controller_spawner" pkg="dynamixel_controllers" type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port pan_tilt_port
+                pan_controller"
+          output="screen"/>
+
+    <!-- start up ros joystick node -->
+    <node name="jstk" pkg="joy" type="joy_node"/>
+
+</launch>

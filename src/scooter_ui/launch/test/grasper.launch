@@ -1,0 +1,54 @@
+<launch>
+	<!-- two cameras, will set transform between them later -->
+        <include file="$(find scooter_ui)/launch/openni2.launch">
+                <arg name="camera" default="rgbd_cam_1" />
+		<!-- First device on bus 2. Seperate buses or face bandwidth-related wedging! -->
+                <arg name="device_id" default="2@0" />
+        </include>
+
+        <include file="$(find scooter_ui)/launch/openni2.launch">
+                <arg name="camera" default="rgbd_cam_2" />
+		<!--First device on bus 3 -->
+                <arg name="device_id" default="3@0" />
+        </include>
+
+	<include file="$(find laser_detection)/launch/laser_detection.launch" />
+
+	<node pkg="grasp_filter" type="grasp_filter" name="grasp_filter"/>
+	
+	<!-- Activate the laser detector -->
+	<node name="$(anon dynparam)" pkg="dynamic_reconfigure" type="dynparam" args="set MotionSeg_main Activate true" />
+
+	<!-- Set up the transform tree for the camera centers to the camera mounts -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_bcast" args="0 0 0 0.7071 0 0 0.7071 r_cam_center rgbd_cam_1_link 100" />
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_bcast" args="0 0 0 0 0 0 1 l_cam_center rgbd_cam_2_link 100" />
+
+	<!-- Camera centers to cross bar edge -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_center_bcast" args="0 0.325 -0.02 0 0 0 1 crossbar_edge l_cam_center 100" />
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_center_bcast" args="0 -0.251 -0.01 0 0 0 1 crossbar_edge r_cam_center 100" />
+
+	<!-- Crossbar edge to left_arm_mount, which is part of the existing Baxter TF tree -->
+	<node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.089535 0 5.6261 0 0 0 1 left_arm_mount crossbar_edge 100" />
+
+	<!-- Unify the point cloud into one cloud with dynamic ICP (processor intensive) -->
+	<node pkg="cloud_registration" type="cloud_registration" name="cloud_masher" />
+
+	<!-- TODO Camera Pose is likely wrong -->
+        <node name="find_grasps" pkg="agile_grasp" type="find_grasps" output="screen">
+        	<param name="cloud_topic" value="/unified_cloud" />
+    		<param name="cloud_frame" value="rgbd_cam_1_rgb_optical_frame" />
+		<param name="cloud_type" value="0" />
+		<param name="svm_file_name" value="$(find agile_grasp)/svm_032015_20_20_same" />
+		<param name="num_samples" value="6000" />
+		<param name="num_threads" value="4" />
+		<param name="num_clouds" value="1" />
+                <rosparam param="workspace"> [-10, 10, -10, 10, -10, 10] </rosparam>
+    		<rosparam param="camera_pose"> [0, 0.445417, 0.895323, 0.215,
+                                                1, 0, 0, -0.015,
+                                                0, 0.895323, -0.445417, 0.23, 
+                                                0, 0, 0, 1] </rosparam>
+    		<param name="min_inliers" value="5" />
+    		<param name="plotting" value="2" />
+		<param name="marker_lifetime" value="5" />
+        </node>
+</launch>

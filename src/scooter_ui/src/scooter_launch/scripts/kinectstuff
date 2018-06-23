@@ -1,0 +1,57 @@
+#!/bin/bash
+set -e
+set -m
+
+MY_PID=$$
+PIDS=
+ARGS="$@"
+PREFIX=/camera
+for x in $*; do
+    case $x in
+        camera*)
+            PREFIX=/$(echo $x | sed 's/.*=//g');;
+        *)  ;;
+    esac
+done
+
+#################################################################################
+# helper functions
+#################################################################################
+
+# not rocket surgery.
+wait_for_topic() { while [ ! "$1" = "" ]; do while ! rostopic list | grep -q $1; do sleep 0.2; done; shift; done; }
+
+################################################################################
+# end helpers
+################################################################################
+
+# if master isn't already up, give up now... multiple backgrounded roslaunches can race, starting multiple roscores
+if rosnode list 2>&1 | grep -q ERROR; then
+  echo "ERROR: Unable to communicate with master!" 1>&2
+  exit 11
+fi
+
+# start a few things backgrounded, and wait for them to come up all the way
+roslaunch openni2_launch openni2.launch $ARGS 1>&2 &
+PID=$!
+
+#  .*/driver == hopefully the openni driver node
+wait_for_topic $PREFIX/driver/parameter_updates
+
+# find the name of the node we're seeking
+FQNN="`rosrun dynamic_reconfigure dynparam list | grep "$PREFIX/driver"`"
+
+# until it succeeds or we give up
+while ! rosrun dynamic_reconfigure dynparam get $FQNN | grep -q depth_registration; do
+  echo "Waiting for depth_registration dynparam" 1>&2
+  sleep 1
+done
+
+echo "forcing depth registration on $FQNN" 1>&2
+rosrun dynamic_reconfigure dynparam set $FQNN depth_registration true
+
+trap "echo ITS A TRAP 1>&2; trap - SIGTERM && kill $PID -$$" INT TERM KILL EXIT
+wait $PID
+kill -9 $PID
+set +e
+exit 0

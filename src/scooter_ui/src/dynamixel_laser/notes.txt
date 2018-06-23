@@ -1,0 +1,9 @@
+Pan-tilt unit, bottom servo is rx-28 (ID 2), top is rx-24 (ID 1)
+
+Left bottom position  
+servo 1 279
+servo 2 948 
+
+Top right position
+servo 1 582 
+servo 2 232

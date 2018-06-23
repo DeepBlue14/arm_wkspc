@@ -1,0 +1,424 @@
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+
+\overrideIEEEmargins
+
+\usepackage{xargs} 
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{subcaption}
+
+%opening
+\title{\LARGE \bf
+Evaluation of an Assistive Manipulation System
+}
+\author{Abraham Shultz, Andreas Ten Pas, Robert Platt, Holly Yanco}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+\begin{abstract}
+This paper describes a complete system, composed of a robot arm mounted to an assistive mobility device, a control system for that arm, and a proposed user interface for selecting objects for the arm to grasp for the user. 
+The ability of the arm to grasp various objects is assessed, and problems with manipulating novel objects are discussed. 
+\end{abstract}
+
+\section{Introduction}
+
+The system described in this paper integrates a grasp planning system, a user interface for designating objects, and a manipulator to produce a system that can grab user-specified objects. 
+
+Overall, the hardware and task approach for this system is similar to the work of Kemp \emph{et al}. \cite{kemp2008point}. 
+However, that work assumed a user with normal upper body control, and focused on the perception and object retrieval elements of the problem. 
+The system described in this paper is intended to be used in experiments with a population including people with cerebral palsy, spinal trauma, and similar conditions. 
+The purpose of these experiments is to guide the construction of user interfaces for assistive robots that permit people with motor disabilities to control the system.
+
+People with motor disabilities will be solicited to use the arm and provide feedback on its utility for activities of daily living (ADLs).
+These users have limited arm mobility, and so limited ability to control the laser pointer.
+The UI for moving the laser pointer can be varied to permit people with different disabilities to aim the laser. 
+For example, if the laser is mounted to a pan-tilt unit, a person with limited upper limb mobility could use a joystick to move the laser, and a user with quadriplegia could use a sip-and-puff switch to control the movement of the laser.
+
+To assess the performance of such a system, it would be desirable to compare the system to other visually-guided grasping systems. 
+Further, the eventual goal of the system is as a testbed for human-robot interaction (HRI) for assistive robotics. 
+As a consequence, the metrics and results used in assessing it should be transferable to performing assistive operations, such as retrieving objects for a user. 
+For the purposes of human-robot interaction, the emphasis from the user is more heavily on task performance than on motion accuracy.
+If the robot is off by several millimeters when grasping something, it only matters if the discrepancy causes the robot to be unable to perform the desired task. 
+
+Some proposed benchmarks are overly broad.
+The RoboCup@Home tasks have been proposed as a benchmark for the performance of assistive robots \cite{stuckler2012demonstrating}. 
+The RoboCup@Home tasks include tracking a person, reacting to verbal commands, and fetching a specified object. 
+As a superset of grasping, these tasks provide more benchmark information than is required for comparing grasp planning and execution on a user-specified object.
+At the same time, the RoboCup@Home tasks are too specific to be applicable to our system. 
+For example, objects to retrieve and actions to perform are specified to the robot using speech input, and so any robot which does not use speech input cannot perform RoboCup@Home tasks. 
+
+More specific proposals for standards have the problem that they do not cover the complete space of grasping systems, and so a novel system may find no applicable standard. 
+Benchmarks have been proposed for grasping based on the smallest and largest enveloping grasps and grasp resistance to force \cite{kragten2010proposal}. 
+These are benchmarks for a hand only, not for a grasping system, and only apply to planar grasping, not to 3D object grasping. 
+
+Other proposed standards or benchmarks make assumptions that are not applicable to our system. 
+Solving a Rubik's Cube has also been proposed as a benchmark for assistive robotic systems, because the solution requires both visual perception of the cube's state and dexterous manipulation to solve it \cite{zielinski2006rubik}. 
+However, solving a Rubik's Cube is a two-handed manipulation problem. 
+For a single manipulator, the Rubik's Cube is difficult to manipulate, and so this benchmark is only applicable to dual-gripper systems or those capable of reasoning about which objects in the environment can be used as fixtures. 
+
+One method of checking grasp quality evaluates grasps with a cost function that accounts for how likely they are to cause a collision between the gripper and other objects in the area \cite{berenson2008grasp}. 
+However, this method requires a model of the objects, which is not available for novel objects or deformable objects.
+In the absence of a full model of the object, another system uses partial shape information registered to a large set of shapes with known grasps to find grasps with partial sensor data \cite{goldfeder2009data}. 
+The database used is the Princeton Shape Benchmark (PSB), which contains 1814 models of objects \cite{shilane2004princeton}.  
+By \emph{matching} the shape of objects rather than \emph{recognizing} specific objects, the grasp planner attempts to generalize from the grasps known for objects from the PSB to novel objects. 
+In simulation, the system finds force closure grasps on those models from the PSB that are amenable to analysis of the grasp quality. 
+As the authors point out, the analysis used is not a physically realistic simulation. 
+It also depends on the presence of models roughly corresponding to the partially-sensed object.
+Deformable objects are not as amenable to model matching, and so cannot be evaluated by this system. 
+
+The Yale-CMU-Berkley (YCB) Object and Model set \cite{DBLP:journals/corr/CalliWSSAD15} also provides a large set of models of objects. 
+The YCB objects were chosen to be widely available, and provide a variety of shapes, sizes, weights, textures, and rigidities for grasp testing. 
+The YCB object set also includes items from a variety of tests proposed in the literature on upper body thereapy and rehabilitation for humans, with the hope that the existing protocols for evaluating human ability could be applied to robots as well. 
+
+However, despite the intention of providing objects with varying properties, all but two of the objects in the data set are rigid. 
+The exceptions are a bundle of nylon rope, and a plastic chain, which is rigid at the scale of an individual link. 
+Rather than providing a protocol for testing grasping systems, the YCB provides a format for developing and sharing protocols. 
+The methods section of this paper is structured according to the YCB guidelines. 
+
+The OpenGRASP Benchmark \cite{ulbrich2011opengrasp} combines simulated scenarios and robots with models of realistic objects and interface code that permits testing of grasping and grasp planning algorithims in simulation. 
+It appears that OpenRAVE, the robot simulation platform that underlies OpenGrasp, has the ability to simulate sensors, and so provide simulated sensing data from within the simulated environment.
+Our system is intended for tests with human research subjects from who may have cognitive difficulties, and so not understand that the simulation is intended as a model of the real world. 
+
+Two benchmarks have been proposed for the combination of vision systems and manipulators, but are not applicable to the work in this paper because they both assume that objects are rigid \cite{popovic2011grasping, kootstra2012visgrab}. 
+These approaches score grasps by detecting the amount that the grasped object moves relative to the gripper, because a solid grasp does not permit the object to slip. 
+Measuring relative motion only makes sense with rigid objects, as e.g. a stuffed toy could completely change shape when lifted, despite being firmly grasped.
+One of the proposed benchmarks (\cite{kootstra2012visgrab}) also requires stereo pairs of images, rather than point clouds, and so is bound to a specific form of visual input. 
+When the Visgrab benchmark was proposed, this was a reasonable assumption, because point cloud cameras were expensive and rare. 
+Our system uses commonly-available RGB-D cameras, and so works with point clouds rather than stereo images. 
+
+
+\section{Method}
+
+\subsection{Task Description}
+
+The task is lifting objects under the direction of a user and moving them to a fixed location. 
+It is intended to serve as a precursor to retrieving objects that the user wants to move to a specific location, such as a shopping basket while using the system in a supermarket. 
+
+\subsection{Setup Description}
+
+The object set consists of a selection of household objects\improvement{add measurements of objects}. The primary criterion in selecting objects is that at least one of their dimensions is small enough to fit within the gripper of the arm when it is open, and be grasped by it when it is closed. 
+The gripper configuration of the Baxter arm can be changed to have variable grip widths, but for this work, it was set to a maximum open size of 7cm and a closed size of 3cm.
+Any object smaller than 3cm in every dimension could not be picked up, and so was not tested. 
+Similarly, objects wider than 7cm in every dimension were not tested. 
+
+%\begin{figure}[t]
+%\includegraphics[width=\columnwidth]{all_objects}
+%\caption{The objects used in this experiment}
+%\end{figure}
+
+Because the goal of the system is to facilitate user testing for robotic assistance with activities of daily living (ADLs), the objects are common household objects, rather than those that might be more commonly found in a laboratory setting. 
+Objects commonly associated with ADLs have been suggested \cite{matheus2010benchmarking, DBLP:journals/corr/CalliWSSAD15}.
+Our object set contains objects from many of the proposed classes of ADLs, especially food preparation and housekeeping.
+
+The objects are a stuffed toy lobster, a rocket-shaped air bulb duster, a can of black pepper, a container of white pepper, a container of lavender, a blue foam ball, a white spray bottle, a blue spray bottle, a container of coffee creamer, a stuffed toy drill, a stuffed toy screw, a box of coffee stirrers, a plastic packet of agar flakes, a bar of soap in a box, a computer mouse, a nozzle from a vacuum cleaner, and a pocket-sized packet of tissues. 
+
+The tissues, lobster, rocket, toy drill, toy screw, and packet of agar are all deformable to some degree. 
+The box of coffee stirrers and blue ball are not as soft as the other objects, but do flex when pinched by the gripper. 
+The containers of spices, spray bottles, container of coffee creamer, soap box, mouse, and vacuum-cleaner nozzle are rigid against the forces applied by the gripper. 
+
+The objects were placed 75cm from the camera, on a table 46cm from the ground. The arm base is 69cm from the ground as mounted on the scooter. Each object was placed in a specific orientation for testing, as listed in table \ref{tab:objects_orientations} and shown in figure \ref{img:objects_orientations}.
+
+%\begin{table}
+%	\begin{tabular}{l l l l}
+%		Object & Position \\ %for first test & Position for second test
+%		Lobster & Bottom surface towards table, long edge towards camera \\ % & 2 & 15.38\% \\
+%		Rocket & Upright \\ % & 14 & 87.5\% \\
+%		Black Pepper & Upright, front face of box towards camera \\ % & 9 & 40.91\% \\
+%		Blue Ball & Spherical, has no visible orientation \\ % & 11 & 73.33\% \\
+%		Computer Mouse & Normal use position, long edge towards camera \\ % & 3 & 35.71\% \\
+%		White Pepper & Upright \\ % & 4 & 40\% \\
+%		White Bottle & Upright, broad surface towards camera \\ % & 11 & 22\%\\
+%		Creamer & Upright \\ % & 8 & 44\% \\
+%		Water Bottle & Upright, label facing camera \\ % & 7 & 30.43\% \\
+%		Blue Bottle & Upright, broad surface facing camera \\ % & 12 & 34.28\% \\
+%		Stuffed Drill & On side, trigger of drill facing camera \\ % & 9 & 52.94\% \\
+%		Agar Flake Packet & Back surface of packet towards table \\ % & 0 & 0.00\% \\
+%		Coffee Stirrers & Upright, long edge facing camera \\ % & 8 & 28.57\% \\
+%		Spice Jar & Upright, label facing camera \\ % & 11 & 57.89\% \\
+%		Soapbox & On long side, end and front of box facing camera \\ % & 10 & 71.42\% \\
+%		Vacuum Nozzle & Upright, on large end \\ % & 8 & 53.33\% \\
+%		Tissue Packet & Largest face towards table, long edge towards camera \\ % & 17 & 58.33\% \\
+%		Stuffed Toy Screw & Point upwards \\ % & 5 & 50\% \\
+%	\end{tabular}
+%	\caption{Position of each object for testing}
+%	\label{tab:objects_orientations}
+%\end{table}
+
+\begin{figure}[h]
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{black_pepper}
+    \newline
+    
+    \includegraphics[width=\textwidth]{agar_packet}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+     \includegraphics[width=\textwidth]{creamer}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{blue_bottle}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{coffee_stirrers}
+\end{subfigure}
+
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{lavender}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{drill}
+    \newline
+    
+    \includegraphics[width=\textwidth]{soapbox}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{screw}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{tissues}
+    \newline
+    
+    \includegraphics[width=\textwidth]{white_pepper}
+\end{subfigure}
+
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{vacuum_part}
+    \newline
+    
+    \includegraphics[width=\textwidth]{mouse}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{water_bottle}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{lobster}
+    \newline
+    
+    \includegraphics[width=\textwidth]{white_bottle}
+\end{subfigure}
+\begin{subfigure}{0.24\columnwidth}
+    \includegraphics[width=\textwidth]{rocket}
+\end{subfigure}
+\caption{The objects as they were oriented for testing}
+\label{img:objects_orientations}
+\end{figure}
+
+ 
+\subsection{Robot Description}
+
+The system consists of a single robotic arm attached to a mobility scooter designed for use by people with partial mobility disabilities. 
+The arm is one of a pair that were originally attached to a Rethink Robotics Baxter robot. 
+It is a 7-DOF arm with a 1-DOF (parallel) gripper. 
+
+The arm is mounted to a Golden Avenger mobility scooter. The scooter is designed for users with full mobility, but limited strength and endurance. 
+The arm and the computer controlling it are powered from the scooter batteries, so the system as a whole is mobile. 
+
+The image stream and point clouds used for perception in the system are provided by a Primesense Carmine RGB-D camera, mounted near the base of the arm. It is expected that addition of a second RGB-D camera will increase the ability of the system to detect grasps, by providing a more complete point cloud, so a mount point for a second camera is available. 
+However, for the work described in this paper, only a single camera is used. 
+ 
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{cropped_scooter}
+    \caption{View of the front of the scooter, showing the arm and camera.}
+    \label{img:scooter}
+\end{figure}
+
+All of the software developed for the system uses the ROS framework \cite{ros_quigley}. 
+For the test described in this paper, three computers were used. 
+The computer mounted to the scooter runs a modified version of the Baxter Research and Education SDK. 
+The modifications are needed to allow the system to run without the torso, head, or right arm of the Baxter robot. 
+A second computer ran the perception and grasp selection nodes.
+The third computer was used to control the pan-tilt unit to move the targeting laser. 
+For mobile use, the second and third computers will be replaced by a laptop that will be mounted to the scooter. 
+
+The pan-tilt unit for the targeting laser stands in for the human user in this test. 
+The pan-tilt unit moves the laser point to select the target object.
+For each object, the laser was scanned over its surface to target different points on the object.
+Each scan location was approximately 1.5cm from the previous one, but curvature in the surface of the objects could contribute to increasing or decreasing that distance. 
+
+The laser point is detected on the surface of the object by comparing successive RGB image frames from the RGB-D camera to detect motion, and confirming that the moving area is the correct color and size for the laser pointer dot. 
+Because the pan-tilt unit can hold the laser more still than a human, the laser blinks on and off to increase its visibility to the laser detection ROS node. 
+
+The point cloud is then segmented using Locally Convex Connected Patch (LCCP) segmentation, and each point is labeled with an identifier for the segment that it belongs to \cite{stein2014object}. 
+In order to restrict the grasp discovery process to only find grasps on the desired object, the laser pointer dot is located in the image, and the corresponding point is found in the point cloud. 
+The label for the point that the laser is targeting is used to select those points in the same LCCP segment as the laser dot, and those points are presented to the grasp planner as the object to grasp \cite{stein2014object}. 
+All of the other points in a volume of space around the selected segment are also provided to the grasp planner, to permit the planner to find grasps that do not collide with nearby objects. 
+
+In order to locate potential grasping locations in the point cloud, an approach based on the geometry of the Baxter gripper is used \cite{tenusing}. 
+Because the gripper used is a parallel gripper, good locations to grasp are restricted by certain constraints:
+\begin{enumerate}
+  \item The gripper and the robot's forearm must not collide with any point in the point cloud.
+  \item The grasp point must be in the plane between the robot's fingers.
+  \item The plane orthogonal to the direction of minimum curvature of the surface to be grasped must be parallel to the plane between the robot's fingers. 
+\end{enumerate}
+
+For a sampling of the points in the point cloud for the target object, these criteria are assessed. 
+If the point matches the criteria, then it is considered a potential grasp location. 
+The potential grasps are then checked to determine if they are antipodal. 
+An antipodal grasp is one where the line between to contact points on the objects surface remains within the friction cones of the contact points. 
+The friction cone is defined by the forces, normal and frictional, that a point contact can apply to a surface. 
+If the line between two contact points remains within the friction cone of both points, then forces can be applied in opposition from those points, pinching the object. 
+
+However, since the point cloud is likely partial, due to occlusion, the relationship of the gripper to the grasped surface may be unknown, and so it is impossible to determine if the grasp is antipodal. 
+Instead, a support vector machine (SVM) trained on partial point clouds is used to assess the grasps. 
+The SVM data was labeled by determining if a given grasp was antipodal using a point cloud from multiple sensors, but trained using the data available from only one sensor at a time. 
+As a consequence, the SVM was trained to determine if a grasp was antipodal using only a partial point cloud, effectively learning whether the hidden side of the object permits an antipodal grasp. 
+
+After the possible grasps are found, they are scored by a selection algorithm that takes into account how easy to reach the grasps are, how easy it is to perform the grasp using the gripper, and how far the arm has to travel to reach the grasp location.
+Grasps that are unreachable are rejected, leaving only grasps that are collision-free, antipodal, and reachable by the arm. 
+
+The chosen grasps are then sorted by angle off of vertical and then by relative height of the grasp point, with higher locations being preferred.
+The intent of this sorting is to have the arm approach objects from directly above the object.
+Since the next step of moving the object is to lift it up, approaching from above causes the motion towards the object and the lifting motion to occur along the same path. 
+If the desired object had an obstacle above it, preventing more vertical approaches, the most vertical grasp could still be from the side.
+%Lifting the object straight up also reduces the need to re-plan the arm's motion to take into account the size and shape of the grasped object. 
+
+It had been hoped that because approaching from the top matches the way humans grab many objects, the resulting motion of the robot would be more understandable to human observers. 
+Unfortunately, this is not the case, and the arm still engages in visually striking contortions to reach some grasps.
+Constraining the inverse kinematic (IK) solver to prevent these motions is beyond the scope of this work, but is an active area of research \cite{zhao2016experimental}.
+
+The arm then moves to a position such that it can approach the object with the fingers of the gripper parallel to the arm's motion, and moves in to grasp the object and closes the gripper. 
+After grasping the object, the arm moves 2cm vertically and re-closes the gripper, which is to say, sends a second close command to the gripper without opening it. 
+If the object slipped as the arm started to lift it, this re-gripping can tighten the robot's grip while the object is still partly supported by the surface it was resting on. 
+
+After regripping the object, the arm moves 10cm vertically. If the object is still in the gripper when this move is complete, the grasp is considered successful. 
+For objects with variable centers of gravity, such as a bottle with water in it, the grasp may fail later in the process due to the center of gravity moving. 
+The overall score for an object is the number of successful grasps divided by the number of attempts.
+Finally, the arm returns to the starting position, carrying the object. 
+
+\subsection{Procedure}
+
+The execution of the test is largely automated, but progress from stage to stage while grasping the object is controlled by a human operator. 
+The operator's primary responsibility is to control the robot through a test script and reset the object after each attempted grasp.
+
+The operator places the object to be grasped, and aims the laser pointer at a location on the object. 
+The motion of the laser point is controlled by a pair of Dynamixel actuators arranged as a pan-tilt platform.
+The purpose of the pan-tilt platform is to allow the operator to scan the laser over the surface of the object in a regular fashion, targeting different points on the surface of the object. 
+The operator then confirms to the test script that the object is ready, which commands the robot to attempt to grasp the object. 
+The robot attempts the grasp, and the test script then prompts the operator to indicate if the grasp is a success or failure. 
+If the grasp attempt fails, the operator notes the cause of the failure, and resets the object. 
+For the purposes of this study, errors were in one of five categories.
+\begin{enumerate}
+  \item Bad points: The point on the object was incorrectly detected as being part of a different area of the point cloud, or was not detected. 
+  \item Narrow grasps: The grasp was planned for an area of the object that was too narrow for the robot to grasp.
+  \item Knocked object: The robot knocked over the object while positioning itself for the grasp.
+\end{enumerate}
+
+If the grasp attempt succeeds, the operator confirms the success and resets the object. 
+The operator then moves the laser point to the next location on the object and continues the test. 
+After and attempt has been made for all laser points on the object, the operator quits the test script. 
+The test script reports the number of attempts, the number of successes, and the percentage of the attempts that were successful. 
+
+\subsection{Execution Constraints}
+
+Because the system operates on novel objects, and does not model or recognize objects, there are no constraints that apply to specific objects in the way that e.g. orientation constraints would be applied to an open-topped container. 
+
+\section{Results}
+
+The system was able to pick up all but one of the objects at least once. 
+On average, it succeeded on 46.7\% of the grasp attempts, but the level of success varied heavily with the object, rather than remaining consistent across objects. 
+This indicates that the problems arose as a result of qualities of specific objects, rather than systemic problems that affect all objects. 
+
+It had been theorized that deformable objects would be easier to grasp, due to their conformation to the gripper.
+In practice, while many of the deformable objects were more easily graspable, the lobster and agar packet were the most difficult. 
+
+\begin{table*}[t]
+	\begin{tabular}{l r r r r r r r r r r r r}
+		Object & Attempts & Successes & \vbox{\hbox{\strut Percent}\hbox{\strut Success}} & \vbox{\hbox{\strut Bad}\hbox{\strut Points}} & Narrow & Knocked & Attempts & Successes & \vbox{\hbox{\strut Percent}\hbox{\strut Success}} & \vbox{\hbox{\strut Bad}\hbox{\strut Points}} & Narrow & Knocked \\
+		\hline 
+		Rocket & 15 & 14 & 93.3\% & 1 & 8 & 3 & & & & & &\\
+		Blue Ball & 15 & 11 & 73.3\% & 2 & & 2 & & & & & &\\
+		Spice Jar & 15 & 11 & 73.3\% & 1 & & 2 & & & & & &\\
+		Soapbox & 14 & 10 & 71.4\% & & & & & & & & & \\
+		Vacuum Nozzle & 13 & 8 & 61.5\% & 2 & & 1 & & & & & & \\
+		Stuffed Drill & 15 & 9 & 60.0\% & 2 & & & & & & & & \\
+		Tissue Packet & 12 & 7 & 58.3\% & & & 1 & & & & & & \\
+		Stuffed Toy Screw & 9 & 5 & 55.6\%  & & 2 & & & & & & & \\
+		Creamer & 16 & 8 & 50.0\% & 1 & & 3 & & & & & & \\
+		White Pepper & 9 & 4 & 44.4\% & 3 & & & & & & & & \\
+		Black Pepper & 22 & 9 & 40.9\% & 2 & & 9 & & & & & & \\
+		Water Bottle & 22 & 7 & 31.8\% & 5 & & 7 & & & & & & \\
+		Blue Bottle & 33 & 12 & 36.4\% & & 4 & 8 & & & & & & \\
+		Coffee Stirrers & 28 & 8 & 28.6\% & & & 9 & & & & & & \\
+		White Bottle & 47 & 11 & 23.4\% & 1 & 2 & 13 & & & & & & \\
+		Mouse & 13 & 3 & 23.1\% & 2 & 1 & & & & & & & \\
+		Lobster & 13 & 2 & 15.4\% & 2 & 4 & & & & & & & \\
+		Agar Flake Packet & 7 & 0 & 0.0\% & 11 & & & & & & & & \\
+	\end{tabular}
+	\caption{Manipulation success rates and causes of error for various objects.}
+	\label{tab:success_rates}
+\end{table*}
+
+The most common problems were caused by perceptual difficulties. 
+The white bottle presented a challenge to the laser detection system. 
+The surface of the bottle was consistently overexposed in the camera image, and so the laser did not have sufficient contrast to be detected at some locations on the bottle. 
+If the laser is not detected in a frame, the id of the segment associated with the laser point is set to 0. 
+The 0th segment is the set of all points that LCCP segmentation did not assign to any other segment. 
+When this condition is detected, the system cannot determine which object should be grasped, and so does not attempt to find grasps. 
+
+The water bottle was largely transparent. 
+Sections of it were frequently missing from the point cloud, and so were not considered as grasp locations. 
+Those areas were also not considered ``occupied,'' and so were likely to be hit by the arm as it attempted to move to make a grasp. 
+The clear areas of the water bottle also caused it to appear to be thinner than it was, likely due to reflection of the IR pattern in some areas. 
+Some grasps on the illusory thin areas were still successful, but they were unreliable when the arm moved. 
+Transparent areas also allowed the laser to pass without illuminating the object, increasing the number of bad points. 
+
+Imperfections in the registration of the color image, which is used to detect the laser, and the point cloud, which is used to find grasps, meant that some areas near the edges of the object were actually considered to be part of some other region of the point cloud. 
+These points are referred to as ``Bad Points'' in table \ref{tab:errors}. 
+Bad points were most frequently located along the top edge of objects, and resulted in the table behind them being selected as the target object to grasp. 
+Due to its thin shape and reflectivity, the agar flake packet had more bad points than possible valid grasp points. 
+Specular reflection off of some objects contributed to bad points as well. 
+The reflected laser light would illuminate the surface of the table, causing the system to regard the tabletop as the selected object. 
+In an environment with multiple objects, this effect could result in accidental targeting of undesired objects. 
+
+With the black pepper container, the failures were consistently due to attempting to grasp the front corner of the box.
+The top of the box was not present in the point cloud due to the position of the box relative to the camera, and so the closed box could not be distinguished from a box with an open top, and the depth of the box was not available to the system. 
+When the gripper approached, the lower finger of the gripper would contact the front of the box, and the upper finger would contact the top of the box, pushing the box backwards. 
+When the gripper closed, the box would be knocked over.
+The white bottle had a similar problem with its upper area, where the spray nozzle was located.
+The nozzle was too narrow to grasp, but because the side of the nozzle faced the camera, the thickness of the nozzle was hidden. 
+
+Another possible failure is that, due to the segmentation failing to separate e.g. an object and the table it is resting on, all of the points in the volume of space around the selected segment are considered part of the target object. 
+Combining the table and an object results in an illusory object that is sufficiently large that the arm could not likely manipulate it, and so is considered an error. 
+If more than 90\% of the available points are considered part of the object, the system does not use the LCCP segmentation and instead considers all points within an 8cm radius of the laser to be part of the target object. 
+This heuristic allows the system to function despite inconsistent segmentation. 
+However, it can result in the system missing good grasp locations that are located more than 8cm from the laser on the target object. 
+
+\section{Conclusions}
+
+The grasp selection algorithm described in this paper can achieve 85\% success grasping single objects with the point cloud from a single RGB-D camera \cite{Using Geometry to Detect Grasp Poses in 3D Point Clouds}.
+As described above, certain kinds of perceptual problems resulted in difficulties finding a valid grasp. 
+However, all of these problems have potential solutions. 
+
+Transparent objects are a known problem for RGB-D sensors. 
+Because transparent objects may not be fully transparent at other wavelengths, it is possible to detect them under specialized illumination \cite{lysenkov2012recognition}.
+Such an approach requires controlled illumination, but can reconstruct unknown objects.
+In the Microsoft Kinect, the area occupied by a transparent object appears as an invalid area of the image, but the shape of the invalid area can be matched to views of modeled objects to estimate the shape of the transparent object that created the invalid area \cite{klank2011transparent}.
+Unfortunately, this approach requires the use of model objects, and so is likely to have difficulties with novel transparent objects. 
+Training with a larger set of objects, such as the PSB or YCB object collections, may alleviate this problem sufficiently to permit the system to operate on transparent objects likely to be encountered in ADLs. 
+
+
+
+Primary cause of failures to grasp objects is not the grasp selection software. 
+Segmentation of the object is a problem. 
+When the segmentation node fails to select the object, it usually selects the table under the object, or merges the table and the object into one segment, rather than making them separate segments. 
+
+Baxter robots have two arms, and the system presented in this work only uses one of them. 
+The other arm will be mounted to a rolling cart, for use by wheelchair users, as with the Bath University ``Wessex'' robot \cite{edwards2006design}.
+This will facilitate testing and user interface development with a larger population of users, by including people who cannot use a mobility scooter. 
+
+\bibliographystyle{IEEEtran}
+\bibliography{grasping}
+
+\end{document}

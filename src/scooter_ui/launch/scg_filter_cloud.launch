@@ -1,0 +1,6 @@
+<launch>
+        <node pkg="object_filter" type="object_filter" name="object_filter" output="screen">
+		<param name="~laser_topic" value="/tablet/geometry_msgs/point" />
+        	<param name="~cloud_topic" value="/rgbd_cam_1/depth_registered/points" />
+	</node>
+</launch>

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       name="pr2" >
+
+  <!--
+    These collision defines are for planning or simulation not controls. Controls params 
+    are defined in a different file to be conditionally included.
+  -->
+
+  <xacro:property name="upper_elbow_coll">
+    <origin xyz="0 0 -0.0535" rpy="0 0 0" />
+    <geometry>
+      <cylinder radius="0.06" length="0.107" />
+    </geometry>
+  </xacro:property>
+
+  <xacro:property name="upper_elbow_visual_coll">
+    <origin xyz="0 0 0.1365" rpy="0 0 0" />
+    <geometry>
+      <cylinder radius="0.06" length="0.273" />
+    </geometry>
+  </xacro:property>
+
+  <xacro:property name="upper_shoulder_coll">
+    <origin xyz="0 0 0.1361" rpy="0 0 0" />
+    <geometry>
+      <cylinder radius="0.06" length="0.2722" />
+    </geometry>
+  </xacro:property>
+
+  <xacro:property name="lower_shoulder_coll">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <cylinder radius="0.06" length="0.12" />
+    </geometry>
+  </xacro:property>
+
+  <xacro:property name="lower_elbow_coll">
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+    <geometry>
+      <cylinder radius="0.06" length="0.10" />
+    </geometry>
+  </xacro:property>
+
+  <xacro:property name="upper_forearm_coll">
+    <origin xyz="0 0 -0.044" rpy="0 0 0" />
+    <geometry>
+      <cylinder radius="0.06" length="0.088" />
+    </geometry>
+  </xacro:property>
+
+  <xacro:property name="upper_forearm_visual_coll">
+    <origin xyz="0 0 0.136" rpy="0 0 0" />
+    <geometry>
+      <cylinder radius="0.06" length="0.272" />
+    </geometry>
+  </xacro:property>
+
+  <xacro:property name="lower_forearm_coll">
+    <cylinder radius="0.06" length="0.10" />
+  </xacro:property>
+
+  <xacro:property name="wrist_coll">
+    <cylinder radius="0.06" length="0.165" />
+  </xacro:property>
+
+  <xacro:property name="hand_coll">
+    <cylinder radius="0.04" length="0.0464" />
+  </xacro:property>
+
+</robot>

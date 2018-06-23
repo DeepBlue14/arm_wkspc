@@ -1,0 +1,60 @@
+<launch>
+	<!-- Crossbar edge (in the middle, behind the arm) to left_arm_mount, which is part of the existing Baxter TF tree -->
+	<node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.119535 0 0.02261 0 0 0 1 left_arm_mount crossbar_edge 100" />
+
+	<!-- ************ For the low-mounted camera on the LEFT side of the arm -->
+	<!-- Set up the transform tree for the camera center to the camera mounts -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_bcast" args="0 0 0 0 0 0 1 l_cam_center rgbd_cam_1_link 100"/>
+
+	<!-- Camera center to cross bar edge -->
+	<node pkg="lcsr_tf_tools" type="interactive_transform_publisher" name="l_cam_center_bcast" args="0.093739 0.339290 0.068035 -0.003910 0.002800 0.002399 0.999985 crossbar_edge l_cam_center 100" />
+
+	
+	<!-- ************ For the high-mounted camera on the RIGHT side of the arm ************ -->
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_bcast" args="0 0 0 0 0 0 1 r_cam_center rgbd_cam_2_link 100"/>
+
+	<node pkg="lcsr_tf_tools" type="interactive_transform_publisher" name="r_cam_center_bcast" args="0.087836 -0.231344 0.414391 -0.008143 0.187136 0.000924 0.982300 crossbar_edge r_cam_center 100"/>
+
+	<!-- Beyond that is part of the Baxter TF tree, and so not my problem -->
+
+	<!-- Launch rviz with the interactive handles for tf -->
+	<node pkg="rviz" type="rviz" name="interactive_tf_rviz" args="-d /home/csrobot/.rviz/interactive_dual_cam.rviz" />
+
+    <include file="$(find scooter_launch)/launch/openni2.launch">
+            <arg name="camera" default="rgbd_cam_1" />
+            <arg name="device_id" default="1d27/0601@1/8" />
+    </include>
+    
+    <include file="$(find scooter_launch)/launch/openni2.launch">
+            <arg name="camera" default="rgbd_cam_2" />
+            <arg name="device_id" default="1d27/0601@1/5" />
+    </include>
+
+
+    <!-- Attempt at cutting down the point clouds in order to make rviz less laggy -->
+    <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+
+	<!-- Run a passthrough filter to clean NaNs -->
+	
+	<node pkg="nodelet" type="nodelet" name="passthrough_filter_cam1" args="load pcl/PassThrough pcl_manager" output="screen">
+		<remap from="~input" to="/rgbd_cam_1/depth_registered/points" />
+		<rosparam>
+          filter_field_name: z
+          filter_limit_min: 0.01
+          filter_limit_max: 1.5
+          filter_limit_negative: False
+        </rosparam>
+	</node>
+	
+
+  <node pkg="nodelet" type="nodelet" name="passthrough_filter_cam2" args="load pcl/PassThrough pcl_manager" output="screen">
+      <remap from="~input" to="/rgbd_cam_2/depth_registered/points" />
+        <rosparam>
+          filter_field_name: z
+          filter_limit_min: 0.01
+          filter_limit_max: 1.5
+          filter_limit_negative: False
+        </rosparam>
+    </node>
+
+</launch>

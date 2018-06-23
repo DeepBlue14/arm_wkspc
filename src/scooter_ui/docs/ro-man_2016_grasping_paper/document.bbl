@@ -1,0 +1,81 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{#1}
+\csname url@rmstyle\endcsname
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand\BIBentrySTDinterwordspacing{\spaceskip=0pt\relax}
+\providecommand\BIBentryALTinterwordstretchfactor{4}
+\providecommand\BIBentryALTinterwordspacing{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand\BIBforeignlanguage[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+
+\bibitem{stuckler2012demonstrating}
+J.~Stuckler, D.~Holz, and S.~Behnke, ``Demonstrating everyday manipulation
+  skills in robocup@ home,'' \emph{IEEE Robotics and Automation Magazine}, pp.
+  34--42, 2012.
+
+\bibitem{kragten2010proposal}
+G.~Kragten, C.~Meijneke, and J.~Herder, ``A proposal for benchmark tests for
+  underactuated or compliant hands,'' \emph{Mechanical Sciences, 1 (1), 2010},
+  2010.
+
+\bibitem{zielinski2006rubik}
+C.~Zielinski, W.~Szynkiewicz, T.~Winiarski, and M.~Staniak, ``Rubik’s cube
+  puzzle as a benchmark for service robots,'' in \emph{Proceedings of the 12th
+  IEEE International Conference on Methods and Models in Automation and
+  Robotics, MMAR}.\hskip 1em plus 0.5em minus 0.4em\relax Citeseer, 2006, pp.
+  579--84.
+
+\bibitem{berenson2008grasp}
+D.~Berenson and S.~S. Srinivasa, ``Grasp synthesis in cluttered environments
+  for dexterous hands,'' in \emph{Humanoid Robots, 2008. Humanoids 2008. 8th
+  IEEE-RAS International Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax
+  IEEE, 2008, pp. 189--196.
+
+\bibitem{goldfeder2009data}
+C.~Goldfeder, M.~Ciocarlie, J.~Peretzman, H.~Dang, and P.~K. Allen,
+  ``Data-driven grasping with partial sensor data,'' in \emph{Intelligent
+  Robots and Systems, 2009. IROS 2009. IEEE/RSJ International Conference
+  on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2009, pp. 1278--1283.
+
+\bibitem{shilane2004princeton}
+P.~Shilane, P.~Min, M.~Kazhdan, and T.~Funkhouser, ``The princeton shape
+  benchmark,'' in \emph{Shape modeling applications, 2004. Proceedings}.\hskip
+  1em plus 0.5em minus 0.4em\relax IEEE, 2004, pp. 167--178.
+
+\bibitem{popovic2011grasping}
+M.~Popovi{\'c}, G.~Kootstra, J.~A. J{\o}rgensen, D.~Kragic, and N.~Kr{\"u}ger,
+  ``Grasping unknown objects using an early cognitive vision system for general
+  scene understanding,'' in \emph{Intelligent Robots and Systems (IROS), 2011
+  IEEE/RSJ International Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax
+  IEEE, 2011, pp. 987--994.
+
+\bibitem{kootstra2012visgrab}
+G.~Kootstra, M.~Popovi{\'c}, J.~A. J{\o}rgensen, D.~Kragic, H.~G. Petersen, and
+  N.~Kr{\"u}ger, ``Visgrab: A benchmark for vision-based grasping,''
+  \emph{Paladyn, Journal of Behavioral Robotics}, vol.~3, no.~2, pp. 54--62,
+  2012.
+
+\bibitem{DBLP:journals/corr/PasP15}
+\BIBentryALTinterwordspacing
+A.~ten Pas and R.~Platt, ``Localizing antipodal grasps in point clouds,''
+  \emph{CoRR}, vol. abs/1501.03100, 2015. [Online]. Available:
+  \url{http://arxiv.org/abs/1501.03100}
+\BIBentrySTDinterwordspacing
+
+\bibitem{stein2014object}
+S.~C. Stein, M.~Schoeler, J.~Papon, and F.~Worgotter, ``Object partitioning
+  using local convexity,'' in \emph{Computer Vision and Pattern Recognition
+  (CVPR), 2014 IEEE Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax
+  IEEE, 2014, pp. 304--311.
+
+\end{thebibliography}

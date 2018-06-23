@@ -1,0 +1,23 @@
+<launch>
+  
+  <!-- parameters-->
+  <arg name="rviz_config" default="$(find active_sensing)/rviz/active_sensing_no_object_recognition.rviz" />
+    
+  <!-- run JTA server -->
+  <!-- <node name="joint_trajectory_action_server" pkg="baxter_interface" type="joint_trajectory_action_server.py" 
+    respawn="false"	output="screen" args="-m velocity"/> -->
+  
+  <!-- launch moveit & rviz -->
+  <!--<include file="$(find baxter_moveit_config)/launch/demo_baxter.launch">
+    <arg name="rviz_config" value="$(arg rviz_config)" />
+  </include>-->
+  
+  <!-- add infinitam frame to tf -->
+  <node name="add_sensor_frame" pkg="active_sensing" type="add_sensor_frame.py" output="screen" />
+  
+  <!-- suppress Baxter's built-in collision avoidance (avoids "shaky" arm movements) -->
+  <node name="suppress_collision_avoidance" pkg="rostopic" type="rostopic" 
+    args="pub /robot/limb/right/suppress_collision_avoidance std_msgs/Empty -r 10" output="screen" />
+    
+</launch>
+

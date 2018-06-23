@@ -1,0 +1,25 @@
+<launch>
+
+	<include file="$(find active_sensing)/launch/fixed_active_sensing.launch"/>
+
+	<include file="$(find openni2_launch)/launch/openni2.launch">
+		<arg name="device_id" value="1d27/0601" /> 
+		<arg name="camera" value="rgbd_cam_1" />
+	</include>
+
+	<include file="$(find single_camera_demo)/launchs/tatic_transforms.launch" />
+
+	<include file="$(find infinitam)/launch/infinitam.launch" />
+
+	<include file="$(find agile_grasp2)/launch/fixed_detect_grasps_active.launch" />
+
+	<include file="$(find laser_detection)/launch/laser_detection.launch" />
+	<!-- include file="$(find scooter_ui)/launch/scg_laser_detect.luanch" -->
+
+	<include file="$(find object_filter)/launch/cloudbender.launch" />
+
+	<!-- TODO: scooter_ui isn't a package, need to either move the other packages into
+	the main build space, or move their launch files into the packages with the things
+	that those files launch, so the $(find ...) can find them. -->
+
+</launch>

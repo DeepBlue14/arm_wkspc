@@ -1,0 +1,16 @@
+<launch>
+	<!-- Set up the transform tree for the camera center to the camera mounts -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_bcast" args="0 0 0 0 0 0 1 l_cam_center rgbd_cam_1_link 100"/>
+
+	<!-- Camera center to cross bar edge -->
+	<!-- New, fiddled with using interactive tf -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_center_bcast" args="0.0327421054244 0.318126618862 0.047746501863 -0.00391298077506 0.00280068137144 0.00239945995968 0.999985543574 crossbar_edge  l_cam_center  100"/>
+
+	<!-- Crossbar edge to left_arm_mount, which is part of the existing Baxter TF tree -->
+	<node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.089535 0 0.02261 0 0 0 1 left_arm_mount crossbar_edge 100" />
+
+	<!-- Left forearm joint to QR code -->
+	<node pkg="tf" type="static_transform_publisher" name="qr_bcast" args="0.1143 0 0.06985 0 0 0 1 left_lower_forearm qr_code_frame 100" />
+
+	<!-- Beyond that is part of the Baxter TF tree, and so not my problem -->
+</launch>

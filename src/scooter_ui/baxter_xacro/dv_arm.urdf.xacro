@@ -1,0 +1,487 @@
+<?xml version="1.0"?>
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       name="pr2" >
+
+  <include filename="./dv_itb.urdf.xacro" />
+  <include filename="./dv_props_global.urdf.xacro" />
+
+  <!-- Joint limits were originally defined with the rubber stops installed.
+       Our big twist joints do not have the rubber stops installed, so the
+       total range is increased by 1.5 degrees in each direction.
+    -->
+  <xacro:property name="big_twist" value="0.02617993877991494" />
+  <xacro:property name="large_joint_effort_limit" value="50.0" />
+  <xacro:property name="small_joint_effort_limit" value="15.0" />
+  <xacro:property name="large_joint_velocity_limit" value="1.5" />
+  <xacro:property name="small_joint_velocity_limit" value="4.0" />
+
+
+  <!-- side is left|right, reflect is 1|-1 -->
+  <!-- minor changes from arm.urdf.xacro.
+       TODO: Will replace arm.urdf.xacro below when we roll out
+       corrections to p2 robots
+    -->
+
+  <xacro:macro name="baxter_arm" params="side reflect">
+    <!--
+       See data in 12-20-2012 sheet of:
+       https://windchill.heartlandrobotics.com/Windchill/servlet/TypeBasedIncludeServlet?ContainerOid=OR%3Awt.pdmlink.PDMLinkProduct%3A39917&oid=OR%3Awt.doc.WTDocument%3A25232387&u8=1
+
+       UNITS:
+       mass:      kg
+       distances: m
+       rotations: rads
+       inertias:  kg-m2
+      -->
+    <link name="${side}_arm_mount">
+      <!-- all defaults -->
+      <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <mass value="${insignificant_mass}" />
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+      </inertial>
+    </link>
+
+    <link name="${side}_upper_shoulder">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+	  <mesh filename="package://baxter_description/meshes/upper_shoulder/S0.DAE" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      <collision>
+        <xacro:insert_block name="upper_shoulder_coll"/>
+      </collision>
+      <inertial>
+        <origin xyz="0.01783 0.00086 0.19127" rpy="0 0 0" />
+        <mass value="5.70044" />
+        <inertia ixx="0.04709102262" ixy="0.00012787556" ixz="0.00614870039"
+                 iyy="0.03766976455" iyz="0.00078086899" izz="0.03595988478" />
+      </inertial>
+    </link>
+    <!-- s1 link -->
+    <link name="${side}_lower_shoulder">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://baxter_description/meshes/lower_shoulder/S1.DAE" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      <collision>
+        <xacro:insert_block name="lower_shoulder_coll"/>
+      </collision>
+      <inertial>
+        <origin xyz="0.06845 0.00269 -0.00529" rpy="0 0 0" />
+        <mass value="3.22698" />
+        <inertia ixx="0.01175209419" ixy="-0.00030096398" ixz="0.00207675762"
+                 iyy="0.0278859752" iyz="-0.00018821993" izz="0.02078749298" />
+      </inertial>
+    </link>
+    <!-- link between s1 and e0 -->
+    <link name="${side}_upper_elbow">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://baxter_description/meshes/upper_elbow/E0.DAE" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      <collision>
+        <xacro:insert_block name="upper_elbow_coll" />
+      </collision>
+      <inertial>
+        <origin xyz="-0.00276 0.00132 0.18086" rpy="0 0 0" />
+        <mass value="4.31272" />
+        <inertia ixx="0.02661733557" ixy="0.00029270634" ixz="0.00392189887"
+                 iyy="0.02844355207" iyz="0.0010838933" izz="0.01248008322" />
+      </inertial>
+    </link>
+
+    <!-- visual link leaving e0  -->
+    <link name="${side}_upper_elbow_visual">
+      <collision>
+        <xacro:insert_block name="upper_elbow_visual_coll" />
+      </collision>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <mass value="${insignificant_mass}"/>
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}"/>
+      </inertial>
+    </link>
+
+    <!-- e1 link -->
+    <link name="${side}_lower_elbow">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://baxter_description/meshes/lower_elbow/E1.DAE" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      <collision>
+        <xacro:insert_block name="lower_elbow_coll"/>
+      </collision>
+      <inertial>
+        <origin xyz="0.02611 0.00159 -0.01117" rpy="0 0 0" />
+        <mass value="2.07206" />
+        <inertia ixx="0.00711582686" ixy="0.00036036173" ixz="0.0007459496"
+                 iyy="0.01318227876" iyz="-0.00019663418" izz="0.00926852064" />
+      </inertial>
+    </link>
+    <!-- link between e1 and w0 -->
+    <link name="${side}_upper_forearm">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+	  <mesh filename="package://baxter_description/meshes/upper_forearm/W0.DAE" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      <collision>
+        <xacro:insert_block name="upper_forearm_coll"/>
+      </collision>
+      <inertial>
+        <origin xyz="-0.00168 0.0046 0.13952" rpy="0 0 0" />
+        <mass value="2.24665" />
+        <inertia ixx="0.01667742825" ixy="0.00018403705" ixz="0.00018657629"
+                 iyy="0.01675457264" iyz="-0.00064732352" izz="0.0037463115" />
+      </inertial>
+    </link>
+
+    <!-- visual link leaving w0  -->
+    <link name="${side}_upper_forearm_visual">
+      <collision>
+        <xacro:insert_block name="upper_forearm_visual_coll"/>
+      </collision>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <mass value="${insignificant_mass}"/>
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}"/>
+      </inertial>
+    </link>
+
+    <!-- itb -->
+    <xacro:itb itb_name="${side}_arm_itb"/>
+
+    <!-- w1 link -->
+    <link name="${side}_lower_forearm">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://baxter_description/meshes/lower_forearm/W1.DAE" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <xacro:insert_block name="lower_forearm_coll"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0.06041 0.00697 0.006" rpy="0 0 0" />
+        <mass value="1.60979" />
+        <inertia ixx="0.00387607152" ixy="-0.00044384784" ixz="-0.00021115038"
+                 iyy="0.00700537914" iyz="0.00015348067" izz="0.0055275524" />
+      </inertial>
+    </link>
+    <!-- link between w1 and w2 -->
+    <link name="${side}_wrist">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://baxter_description/meshes/wrist/W2.DAE" />
+        </geometry>
+        <material name="lightgrey">
+          <color rgba=".1 .1 .1 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <xacro:insert_block name="wrist_coll"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0.00198 0.00125 0.01855" rpy="0 0 0" />
+        <mass value="0.35093" />
+        <inertia ixx="0.00025289155" ixy="0.00000575311" ixz="-0.00000159345"
+                 iyy="0.0002688601" iyz="-0.00000519818" izz="0.0003074118" />
+      </inertial>
+    </link>
+    <!--  this is the bit that holds the tadpole/camera etc. -->
+    <link name="${side}_hand">
+      <!-- rendered in the mesh
+      <visual>
+        <origin xyz="0 0 -0.0232" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="0.04" length="0.0464" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      -->
+      <collision>
+        <origin xyz="0 0 -0.0232" rpy="0 0 0" />
+        <geometry>
+          <xacro:insert_block name="hand_coll"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0.01093 0.00042 -0.01532" rpy="0 0 0" />
+        <mass value="0.19125" />
+        <inertia ixx="0.00017588" ixy="0.00000147073" ixz="0.0000243633"
+                 iyy="0.00021166377" iyz="0.00000172689" izz="0.00023745397" />
+      </inertial>
+    </link>
+    <link name="${side}_hand_camera">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="0.02" length="0.01" />
+        </geometry>
+        <material name="blue">
+          <color rgba="0 0 1 0.8" />
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="${insignificant_mass}" />
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+      </inertial>
+    </link>
+    <link name="${side}_hand_camera_axis">
+      <!--visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="0.02" length="0.01" />
+        </geometry>
+        <material name="blue">
+          <color rgba="0 0 1 0.8" />
+        </material>
+      </visual-->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="${insignificant_mass}" />
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+      </inertial>
+    </link>
+    <link name="${side}_hand_range">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.005 .02 .005" />
+        </geometry>
+        <material name="blue">
+          <color rgba="0 0 1 0.8" />
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="${insignificant_mass}" />
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+      </inertial>
+    </link>
+    <link name="${side}_hand_accelerometer">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.01 0.01 0.01" />
+        </geometry>
+        <material name="black">
+          <color rgba="0 0 0 1" />
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0.000000 0.000000 0.000000" rpy="0 0 0" />
+        <mass value="${insignificant_mass}" />
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+      </inertial>
+    </link>
+    <link name="${side}_gripper_base">
+      <visual>
+        <origin xyz="0 0 -0.02" rpy="0 0 0" />
+        <geometry>
+          <box size="0.025 0.075 0.035" />
+        </geometry>
+        <material name="darkred">
+          <color rgba=".5 .1 .1 1" />
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0.000000 0.000000 0.000000" rpy="0 0 0" />
+        <mass value="${insignificant_mass}" />
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+      </inertial>
+    </link>
+    <link name="${side}_gripper">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.01 0.01 0.01" />
+        </geometry>
+        <material name="black">
+          <color rgba="0 0 0 1" />
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0.000000 0.000000 0.000000" rpy="0 0 0" />
+        <mass value="${insignificant_mass}" />
+        <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                 iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+      </inertial>
+    </link>
+
+    <!-- torso_arm_mount is measudarkred to the center of the top locating
+         pin on the mating surface -->
+    <joint name="${side}_torso_arm_mount" type="fixed">
+      <origin xyz="0.024645 ${reflect*0.219645} 0.118588" rpy="0 0 ${reflect*0.7854}" />
+      <parent link="torso" />
+      <child link="${side}_arm_mount" />
+    </joint>
+
+    <!-- s0 joint includes the bracket -->
+    <joint name="${side}_s0" type="revolute">
+      <origin xyz="0.055695 0 0.011038" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_arm_mount" />
+      <child link="${side}_upper_shoulder" />
+      <limit lower="${-1.6755 - big_twist}" upper="${1.6755 + big_twist}"
+             effort="${large_joint_effort_limit}" velocity="${large_joint_velocity_limit}" />
+      <dynamics damping="0.7" friction="0.0" />
+    </joint>
+    <joint name="${side}_s1" type="revolute">
+      <origin xyz="0.069 0 0.27035" rpy="-${PI_DIV_2} 0 0" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_upper_shoulder" />
+      <child link="${side}_lower_shoulder" />
+      <limit lower="-2.147" upper="1.047" effort="${large_joint_effort_limit}" velocity="${large_joint_velocity_limit}" />
+      <dynamics damping="0.7" friction="0.0" />
+    </joint>
+    <joint name="${side}_e0" type="revolute">
+      <origin xyz="0.102 0 0" rpy="${PI_DIV_2} 0 ${PI_DIV_2}" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_lower_shoulder" />
+      <child link="${side}_upper_elbow" />
+      <limit lower="${-3.028 - big_twist}" upper="${3.028 + big_twist}"
+             effort="${large_joint_effort_limit}" velocity="${large_joint_velocity_limit}" />
+      <dynamics damping="0.7" friction="0.0" />
+    </joint>
+    <joint name="${side}_e0_fixed" type="fixed">
+      <origin xyz="0.107 0 0" rpy="${PI_DIV_2} 0 ${PI_DIV_2}" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_lower_shoulder" />
+      <child link="${side}_upper_elbow_visual" />
+    </joint>
+    <joint name="${side}_e1" type="revolute">
+      <origin xyz="0.069 0 0.26242" rpy="-${PI_DIV_2} -${PI_DIV_2} 0" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_upper_elbow" />
+      <child link="${side}_lower_elbow" />
+      <limit lower="-0.05" upper="2.618" effort="${large_joint_effort_limit}" velocity="${large_joint_velocity_limit}" />
+      <dynamics damping="0.7" friction="0.0" />
+    </joint>
+    <joint name="${side}_w0" type="revolute">
+      <origin xyz="0.10359 0 0" rpy="${PI_DIV_2} 0 ${PI_DIV_2}" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_lower_elbow" />
+      <child link="${side}_upper_forearm" />
+      <limit lower="-3.059" upper="3.059" effort="${small_joint_effort_limit}" velocity="${small_joint_velocity_limit}" />
+      <dynamics damping="0.7" friction="0.0" />
+    </joint>
+    <joint name="${side}_w0_fixed" type="fixed">
+      <origin xyz="0.088 0 0" rpy="${PI_DIV_2} 0 ${PI_DIV_2}" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_lower_elbow" />
+      <child link="${side}_upper_forearm_visual" />
+    </joint>
+    <!-- joint to itb -->
+    <joint name="${side}_w0_to_itb_fixed" type="fixed" >
+      <origin xyz="-0.0565 0 0.12" rpy="-${PI_DIV_2} 0 ${PI_DIV_2}" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_upper_forearm" />
+      <child link="${side}_arm_itb" />
+    </joint>
+
+    <joint name="${side}_w1" type="revolute">
+      <origin xyz="0.01 0 0.2707" rpy="-${PI_DIV_2} -${PI_DIV_2} 0" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_upper_forearm" />
+      <child link="${side}_lower_forearm" />
+      <limit lower="-${PI_DIV_2}" upper="2.094" effort="${small_joint_effort_limit}" velocity="${small_joint_velocity_limit}" />
+      <dynamics damping="0.7" friction="0.0" />
+    </joint>
+    <joint name="${side}_w2" type="revolute">
+      <origin xyz="0.115975 0 0" rpy="${PI_DIV_2} 0 ${PI_DIV_2}" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_lower_forearm" />
+      <child link="${side}_wrist" />
+      <limit lower="-3.059" upper="3.059" effort="${small_joint_effort_limit}" velocity="${small_joint_velocity_limit}" />
+      <dynamics damping="0.7" friction="0.0" />
+    </joint>
+    <!--  fixed dummy joint connecting output of w2 gearbox housing to hand (tadpole) piece -->
+    <!--  make it fixed, so it will always be 0radians -->
+    <joint name="${side}_hand" type="fixed">
+      <origin xyz="0 0 0.11355" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <parent link="${side}_wrist" />
+      <child link="${side}_hand" />
+    </joint>
+    <joint name="${side}_hand_camera" type="fixed">
+      <origin xyz="0.03825 0.012 0.015355" rpy="0 0 -1.57079633" />
+      <parent link="${side}_hand" />
+      <child link="${side}_hand_camera" />
+    </joint>
+    <joint name="${side}_hand_camera_axis" type="fixed">
+      <origin xyz="0.03825 0.012 0.015355" rpy="0 0 0" />
+      <parent link="${side}_hand" />
+      <child link="${side}_hand_camera_axis" />
+    </joint>
+    <joint name="${side}_hand_range" type="fixed">
+      <origin xyz="0.032 -0.020245 0.0288" rpy="0 -${PI_DIV_2} -${PI_DIV_2}" />
+      <parent link="${side}_hand" />
+      <child link="${side}_hand_range" />
+    </joint>
+    <joint name="${side}_hand_accelerometer" type="fixed">
+      <origin xyz="0.00198 0.000133 -0.0146" rpy="0 0 0" />
+      <parent link="${side}_hand" />
+      <child link="${side}_hand_accelerometer" />
+    </joint>
+    <joint name="${side}_gripper_base" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <parent link="${side}_hand" />
+      <child link="${side}_gripper_base" />
+    </joint>
+    <joint name="${side}_endpoint" type="fixed">
+      <origin xyz="0.0 0 0.025" rpy="0 0 0" />
+      <parent link="${side}_gripper_base" />
+      <child link="${side}_gripper" />
+    </joint>
+  </xacro:macro>
+</robot>

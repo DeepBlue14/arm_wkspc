@@ -1,0 +1,8 @@
+<launch>
+  <node name="joystick_listener" pkg="mouse_joy_pos" type="screen_is_range.py">
+    <param name="~dev" value="/dev/input/mice"/>
+  </node>
+  <node name="serial_link" pkg="joystick_arduino" type="joystick_arduino.py">
+    <param name="~port" value="/dev/ttyACM0"/>
+  </node>
+</launch>

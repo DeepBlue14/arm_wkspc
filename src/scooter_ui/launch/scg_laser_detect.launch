@@ -1,0 +1,8 @@
+<launch>
+	<group>
+                <!-- Remap from the name that was assigned by the camera launchfile to the default -->
+                <!-- remap to="/rgbd_cam_1/rgb/image_rect_color" from="/camera/rgb/image_rect_color" -->
+                <include file="$(find laser_detection)/launch/laser_detection.launch" />
+        </group>
+
+</launch>

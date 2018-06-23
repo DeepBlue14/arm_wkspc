@@ -1,0 +1,27 @@
+#### **Introduction**
+**Overview**
+The purpose of this experiment is to test the robustness of our laser control software.
+
+**Task 1**
+For the first two tasks, you will be asked to move the pointer in specific
+directions, for example, north, south, south-west.
+
+**Task 2**
+For the second two tasks, you will be asked to move the pointer so that the
+laser point is on a specific object.
+
+=====
+
+#### **Task 1A**
+
+
+#### **Task 1B**
+
+
+#### **Task 2A**
+
+
+#### **Task 2B**
+
+
+

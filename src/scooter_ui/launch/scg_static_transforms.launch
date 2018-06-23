@@ -1,0 +1,22 @@
+<launch>
+	<!-- Crossbar edge (in the middle, behind the arm) to left_arm_mount, which is part of the existing Baxter TF tree -->
+	<node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.119535 0 0.02261 0 0 0 1 left_arm_mount crossbar_edge 100" />
+
+	<!-- ************ For the low-mounted camera on the LEFT side of the arm -->
+	<!-- Set up the transform tree for the camera center to the camera mounts -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_bcast" args="0 0 0 0 0 0 1 l_cam_center rgbd_cam_1_link 100"/>
+
+	<!-- Camera center to cross bar edge -->
+	<!-- New, fiddled with using interactive tf -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_center_bcast" args="0.093621 0.363686 0.067844 -0.003910 0.002800 0.002399 0.999985 crossbar_edge  l_cam_center  100" />
+        
+	
+	<!-- ************ For the high-mounted camera on the RIGHT side of the arm ************ -->
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_bcast" args="0 0 0 0 0 0 1 r_cam_center rgbd_cam_1_link 100"/>
+
+	<!-- Camera center to cross bar edge -->
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_center_bcast" args="0.087692 -0.201819 0.413928 -0.008142 0.187135 0.000924 0.982299 crossbar_edge r_cam_center 100"/>
+
+     
+
+</launch>

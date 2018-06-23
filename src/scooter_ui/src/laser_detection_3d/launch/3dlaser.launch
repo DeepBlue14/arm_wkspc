@@ -1,0 +1,3 @@
+<launch>
+	<node name="laser_detector" pkg="laser_detection_3d" type="laser_detection_3d" output="screen" ></node>
+</launch>

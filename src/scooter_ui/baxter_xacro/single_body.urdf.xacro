@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       name="pr2" >
+
+  <include filename="./dv_props_global.urdf.xacro" />
+
+  <xacro:property name="crossbar_size" value="0.6858 0.2286 0.2032"/>
+  <xacro:property name="steering_size" value="0.508 0.508 0.2032"/>
+  <xacro:property name="ui_dev_size" value="0.254 0.508 0.381"/>
+  
+  <xacro:macro name="single_body">
+  	  <!-- provides a default base frame, although rviz defaults to base_link... -->
+  	  <link name="base">
+	    <inertial>
+	      <origin xyz="0 0 0" rpy="0 0 0" />
+	      <mass value="${insignificant_mass}" />
+	      <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+                       iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+	    </inertial>
+	  </link>
+  
+	  <!-- Keep out area for the crossbar with the cameras -->
+	  <!-- Named it torso so the left arm would mount to it -->
+	  <link name="torso"> 
+	    <visual>
+	      <geometry>
+	        <box size="${crossbar_size}"/>
+	      </geometry>
+	      <material name="green">
+	        <color rgba="0.0 0.65 0.0 1"/>
+	      </material>
+	    </visual>
+	    <collision>
+	      <geometry>
+	        <box size="${crossbar_size}"/>
+	      </geometry>
+	    </collision>
+	  </link>    
+	  
+	  <!-- The steering column of the scooter -->
+	  <link name="steering_col">
+	    <visual>
+	      <geometry>
+	        <box size="0.508  0.2032 0.508"/>
+	      </geometry>
+	      <material name="blue">
+	        <color rgba="0 0 .65 1"/>
+	      </material>
+	    </visual>
+	    <collision>
+	      <geometry>
+	        <box size="0.508 0.508 0.2032"/>
+	      </geometry>
+	    </collision>
+	  </link>
+	  
+	  <!-- The user interface device -->
+	  <link name="ui_device">
+	    <visual>
+	      <geometry>
+	        <box size="0.254 0.381 0.508"/>
+	      </geometry>
+	      <material name="red">
+	        <color rgba="0.65 0 0 1"/>
+	      </material>
+	    </visual>
+	    <collision>
+	      <geometry>
+	        <box size="0.254 0.508 0.381"/>
+	      </geometry>
+	    </collision>
+	  </link>
+      
+      <joint name="base_to_crossbar" type="fixed">
+      	<parent link="base"/>
+      	<child link="torso"/>
+      </joint>
+      
+      <joint name="crossbar_to_steering" type="fixed">
+        <parent link="torso"/>
+        <child link="steering_col"/>
+        <!-- steering column is behind crossbar -->
+        <origin xyz="0.0 -0.25 0.2032"/>
+      </joint>
+
+      <joint name="steering_to_ui" type="fixed">
+        <parent link="steering_col"/>
+        <child link="ui_device"/>
+        <!-- ui device is on the upper left (from the front) of the steering column -->
+        <origin xyz="-0.135 0.0 0.2032"/>
+      </joint>
+	</xacro:macro>
+</robot>

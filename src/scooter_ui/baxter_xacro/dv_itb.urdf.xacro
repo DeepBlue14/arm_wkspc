@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       name="pr2" >
+
+  <include filename="./dv_props_global.urdf.xacro" />
+
+  <xacro:macro name="itb" params="itb_name">
+    <!-- origin is center of knob on backside of pcb -->
+    <link name="${itb_name}">
+      <!-- note: invisible -->
+      <!--
+         <visual>
+  	   <origin xyz="0 0 0" rpy="0 0 0" />
+           <geometry>
+             <box size=".059 0.118  0.032" />
+           </geometry>
+           <material name="white">
+             <color rgba="1 1 1 1" />
+           </material>
+         </visual>
+         -->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+      <mass value="${insignificant_mass}" />
+      <inertia ixx="${insig_inert_xx}" ixy="0" ixz="0" 
+               iyy="${insig_inert_yy}" iyz="0" izz="${insig_inert_zz}" />
+    </inertial>
+
+    </link>
+  </xacro:macro>
+</robot>

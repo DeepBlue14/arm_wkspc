@@ -1,0 +1,12 @@
+<launch>  
+    <arg name="image_topic" default="/rgbd_cam_1/rgb/image_rect_color"/>
+    <arg name="points_topic" default="/rgbd_cam_1/depth_registered/points"/>
+    <arg name="debug_topic" default="/debug_points"/>
+
+  <node pkg="qrcode_detection" name="qrcode_detector" type="qr_code_detection.py" output="screen">
+    <param name="image_topic" value="$(arg image_topic)"/>
+    <param name="points_topic" value="$(arg points_topic)"/>
+    <param name="debug_topic" value="$(arg debug_topic)"/>
+  </node>
+
+</launch>

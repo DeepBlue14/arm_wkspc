@@ -1,0 +1,13 @@
+<launch>
+	<include file="$(find scooter_ui)/launch/openni2.launch">
+		<arg name="camera" default="first_device" />
+		<arg name="device_id" default="#1" />
+	</include>
+
+	<include file="$(find scooter_ui)/launch/openni2.launch">
+		<arg name="camera" default="second_device" />
+		<arg name="device_id" default="#2" />
+	</include>
+
+	<node pkg="cloud_registration" type="cloud_registration" name="cloud_registration"/>
+</launch>

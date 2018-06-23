@@ -1,0 +1,27 @@
+<launch>
+	<include file="$(find scooter_launch)/launch/openni2.launch">
+		<arg name="camera" default="rgbd_cam_1"/>
+		<arg name="device_id" default="1d27/0601"/>
+	</include>
+
+	<!-- Set up the transform tree for the camera center to the camera mounts -->
+	<!-- node pkg="tf" type="static_transform_publisher" name="l_cam_bcast" args="0 0 0 0 0 0 1 l_cam_center rgbd_cam_1_link 100"/ -->
+
+	<!-- Camera center to cross bar edge -->
+	<!-- node pkg="lcsr_tf_tools" type="interactive_transform_publisher" name="l_cam_center_bcast" args="0.0368033 0.317069 -0.0112222  -0.00778288 -0.0175583 0.00256939 0.999812  crossbar_edge  l_cam_center  100"/ -->
+
+	<!-- Crossbar edge to left_arm_mount, which is part of the existing Baxter TF tree -->
+	<!-- node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.089535 0 0.026261 0 0 0 1 left_arm_mount crossbar_edge 100" / -->
+
+	<!-- Same general idea as above, but for the right camera -->
+	<!-- Set up the transform tree for the camera center to the camera mounts -->
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_bcast" args="0 0 0 0 0 0 1 r_cam_center rgbd_cam_1_link 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.089535 0 0.026261 0 0 0 1 left_arm_mount crossbar_edge 100" />
+
+	<node pkg="lcsr_tf_tools" type="interactive_transform_publisher" name="r_cam_center_bcast" args="0.0368033 0.317069 -0.0112222  -0.00778288 -0.0175583 0.00256939 0.999812  crossbar_edge  r_cam_center  100"/>
+
+	<!-- Beyond that is part of the Baxter TF tree, and so not my problem -->
+
+	<!-- Launch rviz with the interactive handles for tf -->
+	<node pkg="rviz" type="rviz" name="interactive_tf_rviz" args="-d /home/csrobot/.rviz/interactive_tf_calibration.rviz" />
+</launch>

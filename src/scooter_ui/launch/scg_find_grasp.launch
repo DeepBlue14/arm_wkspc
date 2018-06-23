@@ -1,0 +1,33 @@
+<launch>
+    <node name="grasps_server" pkg="agile_grasp" type="find_grasps" output="screen">
+        <param name="cloud_topic" value="/object_filter/points" />
+        <param name="cloud_frame" value="base" />
+        <param name="cloud_type" value="2" /> <!-- 0: sensor_msgs/PointCloud2, 1: agile_grasp/CloudSized, 2: agile_grasp/CloudIndexed -->
+        <param name="svm_file_name" value="$(find agile_grasp)/svm_032015_20_20_same" />
+        <param name="num_samples" value="2000" /> <!-- 0: use all indices from CloudIndexed, >0: subsample indices -->
+        <param name="num_threads" value="2" />
+        <param name="num_clouds" value="1" />
+	<rosparam param="workspace"> [0.3, 1.0, -0.1, 0.5, -0.3, 0.7] </rosparam>
+        <rosparam param="camera_pose"> [0, 0.445417, 0.895323, 0.215, 
+              1, 0, 0, -0.015, 
+              0, 0.895323, -0.445417, 0.23, 
+              0, 0, 0, 1] 
+        </rosparam>    
+        <param name="output_mode" value="2" /> <!-- 0: grasp hypotheses, 1: antipodal grasps, 2: handle grasps, 3: grasps within handle -->
+        <param name="plotting" value="2" /> <!-- 0: none, PCL, rviz -->
+    	<param name="marker_lifetime" value="30"/>
+        <!-- hand parameters -->
+        <param name="finger_width" value="0.01" />
+        <param name="hand_outer_diameter" value="0.09" />
+        <param name="hand_depth" value="0.06" />
+        <param name="hand_height" value="0.02" />
+        <param name="init_bite" value="0.01" />
+    
+        <!-- handle parameters -->
+        <param name="min_inliers" value="10" />
+    
+        <!-- other parameters -->
+        <param name="saves_clouds" value="false" />
+        <param name="cloud_folder" value="/home/baxter/data/active_sensing/" />
+    </node>
+</launch>

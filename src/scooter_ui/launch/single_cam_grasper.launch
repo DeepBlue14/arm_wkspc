@@ -1,0 +1,29 @@
+<launch>
+	<!-- Naming of cameras -->
+	<include file="./scg_camera.launch"/>
+
+	<!-- Detects laser point in image and segments objects-->
+	<include file="./scg_laser_detect.launch"/>	
+
+	<!-- Cuts point cloud down to area around laser -->
+	<include file="./scg_filter_cloud.launch"/>
+
+	<!-- Static transforms between the cameras and the base -->
+	<include file="./scg_static_transforms.launch"/>
+
+	<!-- finds grasps -->
+	<include file="./scg_find_grasp.launch"/>
+
+	<!-- Start up the kinematics required for grasp selection -->
+	<include file="./scg_kinematics.launch"/>
+	
+	<!-- Choose good grasps as a service, uses kinematics for reachability -->
+	<include file="./scg_select_grasp.launch"/>
+
+	<!-- Puts everything in the base frame for later processing -->
+	<include file="./scg_transform_cloud.launch"/>
+
+	<!-- Launch RVIZ with a config that is good for viewing the grasps -->
+	<!-- This is a hack, and relies on the position of the agile grasp package.-->
+	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find agile_grasp)../scooter_ui/rviz/grasper.rviz"/>
+</launch>

@@ -1,0 +1,48 @@
+<launch>
+	<!-- Crossbar edge (in the middle, behind the arm) to left_arm_mount, which is part of the existing Baxter TF tree -->
+	<!-- This one makes the cloud from the structure sensor align with the point clouds from the cameras -->
+	<!-- node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.073535 0 0.008 0 0 0 1 left_arm_mount crossbar_edge 100" / -->
+
+	<!-- The one above results in clouds aligning, but no clouds found because the laser and the cloud search area are both way off from where the laser actually is. This one is an attempt to make them match up -->
+	<node pkg="tf" type="static_transform_publisher" name="crossbar_bcast" args="-0.109535 0.025 0.0081 0 0 0 1 left_arm_mount crossbar_edge 100" />
+
+	<!-- ************ For the low-mounted camera on the LEFT side of the arm -->
+	<!-- Set up the transform tree for the camera center to the camera mounts -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_bcast" args="0 0 0 0 0 0 1 l_cam_center rgbd_cam_1_link 100"/>
+
+	<!-- Camera center to cross bar edge -->
+	<!-- New, fiddled with using interactive tf -->
+	<node pkg="tf" type="static_transform_publisher" name="l_cam_center_bcast" args="0.097492 0.367952 0.074606 -0.00155 0.00280 0.00164 0.99999  crossbar_edge l_cam_center 100" />
+
+	<!-- ************ For the high-mounted camera on the RIGHT side of the arm ************ -->
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_bcast" args="0 0 0 0 0 0 1 r_cam_center rgbd_cam_2_link 100"/>
+
+	<!-- Camera center to cross bar edge -->
+	<node pkg="tf" type="static_transform_publisher" name="r_cam_center_bcast" args="0.09523 -0.20781 0.41300 -0.00814 0.18713 0.00092 0.98229 crossbar_edge r_cam_center 100"/>
+
+	<!--
+		Commands used to launch the cameras on the time I got it working:
+		roslaunch openni2_launch openni2.launch device_id:=1d27/0600@1/15 camera:=structure
+		roslaunch openni2_launch openni2.launch device_id:="1d27/0601@1/11" camera:=left
+		roslaunch openni2_launch openni2.launch device_id:=1d27/0601@1/16 camera:=right
+
+		This is with the left camera on the rearmost USB2 port and the right camera on the frontmost
+		USB2 port. 
+	-->
+
+    <include file="$(find scooter_launch)/launch/openni2.launch">
+            <arg name="camera" default="rgbd_cam_1" />
+            <arg name="device_id" default="1d27/0601@1/8" />
+    </include>
+    
+    <include file="$(find scooter_launch)/launch/openni2.launch">
+            <arg name="camera" default="rgbd_cam_2" />
+            <arg name="device_id" default="1d27/0601@1/5" />
+    </include>
+
+    <include file="$(find openni2_launch)/launch/openni2.launch">
+            <arg name="camera" default="structure" />
+            <arg name="device_id" default="1d27/0600@1/10" />
+    </include>
+
+</launch>

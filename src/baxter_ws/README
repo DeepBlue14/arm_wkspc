@@ -1,0 +1,12 @@
+if you don't have "rosws" on your path: sudo apt-get install python-rosinstall
+
+In the src directory of the beginings of an empty catkin workspace:
+
+rosws init
+rosws merge /opt/ros/$ROS_DISTRO
+rosws merge https://code.cs.uml.edu/baxter/baxter_ws/blobs/raw/one-armed-bandit/workspace.rosinstall
+rosws up
+catkin_workspace_init
+cd ..
+catkin_make
+source devel/setup.bash

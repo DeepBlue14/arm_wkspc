@@ -1,0 +1,69 @@
+<Environment>
+  
+  <KinBody name="sensors_horz_bar">
+    <Body type="static" name="sensors_horz_bar_link">
+      <Geom type="box">
+        <Translation>-0.09 0.00 0.04</Translation>        
+        <extents>0.04 0.35 0.04</extents>
+        <ambientColor>1. 0. 0.</ambientColor>
+        <diffuseColor>1. 0. 0.</diffuseColor>
+      </Geom>
+    </Body>
+  </KinBody>
+  
+  <KinBody name="sensors_vert_bar">
+    <Body type="static" name="sensors_vert_bar_link">
+      <Geom type="box">
+        <Translation>-0.09 -0.32 0.25</Translation>        
+        <extents>0.04 0.04 0.23</extents>
+        <ambientColor>1. 0. 0.</ambientColor>
+        <diffuseColor>1. 0. 0.</diffuseColor>
+      </Geom>
+    </Body>
+  </KinBody>
+  
+  <KinBody name="sensor_right">
+    <Body type="static" name="sensor_right_link">
+      <Geom type="box">
+        <Translation>-0.04 -0.32 0.43</Translation>        
+        <extents>0.06 0.10 0.04</extents>
+        <ambientColor>1. 0. 0.</ambientColor>
+        <diffuseColor>1. 0. 0.</diffuseColor>
+      </Geom>
+    </Body>
+  </KinBody>
+  
+  <KinBody name="sensor_left">
+    <Body type="static" name="sensor_right_link">
+      <Geom type="box">
+        <Translation>-0.04 0.29 0.06</Translation>        
+        <extents>0.06 0.10 0.04</extents>
+        <ambientColor>1. 0. 0.</ambientColor>
+        <diffuseColor>1. 0. 0.</diffuseColor>
+      </Geom>
+    </Body>
+  </KinBody>
+  
+  <KinBody name="scooter_front">
+    <Body type="static" name="scooter_front_link">
+      <Geom type="box">
+        <Translation>-0.08 0.00 -0.35</Translation>        
+        <extents>0.04 0.35 0.35</extents>
+        <ambientColor>1. 0. 0.</ambientColor>
+        <diffuseColor>1. 0. 0.</diffuseColor>
+      </Geom>
+    </Body>
+  </KinBody>
+  
+  <KinBody name="under_base">
+    <Body type="static" name="under_base_link">
+      <Geom type="box">
+        <Translation>0.07 0.00 -0.22</Translation>        
+        <extents>0.07 0.07 0.07</extents>
+        <ambientColor>1. 0. 0.</ambientColor>
+        <diffuseColor>1. 0. 0.</diffuseColor>
+      </Geom>
+    </Body>
+  </KinBody>
+  
+</Environment>

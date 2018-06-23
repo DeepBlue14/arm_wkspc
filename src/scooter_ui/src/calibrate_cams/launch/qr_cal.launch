@@ -1,0 +1,13 @@
+<launch>
+        <include file="$(find scooter_ui)/launch/openni2.launch">
+                <arg name="camera" default="rgbd_cam_1" />
+                <!--First device on bus 2 -->
+                <arg name="device_id" default="2@0" />
+        </include>
+
+	<node pkg="zbar_ros" type="barcode_reader_node" name="barcode_reader">
+		<param name="throttle_repeated_barcodes" type="double" value="2.0"/>
+		<remap from="image" to="/rgbd_cam_1/rgb/image_rect_color" />
+	</node>
+</launch>
+

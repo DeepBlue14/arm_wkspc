@@ -1,0 +1,5 @@
+<dictionary>
+    <words brief="stop" say="Terminating all default processes." />
+    <words brief="greet" say="Hello humans, take me to your leader." />
+    <words brief="init" say="Initialing activation sequence.  Arming the system." />
+</dictionary>
