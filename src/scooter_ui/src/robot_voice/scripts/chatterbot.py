@@ -13,7 +13,7 @@ import rospy
 from std_msgs.msg import Int32
 
 def talker():
-    options = ['stop', 'greet', 'init']
+    options = ['stop', 'greet', 'init', 'cal0', 'cal1', 'cal2', 'cal3', 'cal4']
     pub = rospy.Publisher('chatter', Int32, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz

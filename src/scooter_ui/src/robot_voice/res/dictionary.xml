@@ -1,5 +1,10 @@
 <dictionary>
-    <words brief="stop" say="Terminating all default processes." />
-    <words brief="greet" say="Hello humans, take me to your leader." />
-    <words brief="init" say="Initialing activation sequence.  Arming the system." />
+    <words brief="stop"  say="Terminating all default processes."/>
+    <words brief="greet" say="Hello humans, take me to your leader."/>
+    <words brief="init"  say="Initializing activation sequence.  Arming the system."/>
+    <words brief="cal0"  say="Starting calibration process.  Enable power to the lasers, face the same direction as the mobility device, and we will proceed."/>
+    <words brief="cal1"  say="Shift north."/>
+    <words brief="cal2"  say="Shift south."/>
+    <words brief="cal3"  say="Shift east."/>
+    <words brief="cal4"  say="Shift west."/>
 </dictionary>
