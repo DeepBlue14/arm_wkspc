@@ -44,12 +44,15 @@ unset your_hostname
 # will be overwritten by any variables set here.
 
 # Specify Baxter's hostname
-baxter_hostname="thing2.local"
+#baxter_hostname="thing1.local" #york
+baxter_hostname="thing1.local"  #lancaster
 
 # Set *Either* your computers ip address or hostname. Please note if using
 # your_hostname that this must be resolvable to Baxter.
 #your_ip="169.254.9.155"
-your_hostname="scooter-arm.local"
+your_ip="10.10.10.101"
+#your_hostname="scooter-arm.local"
+#your_hostname="robot-lab11.local"
 
 # Specify ROS distribution (e.g. groovy, hydro)
 ros_version="indigo"
