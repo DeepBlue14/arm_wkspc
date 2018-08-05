@@ -44,8 +44,8 @@ unset your_hostname
 # will be overwritten by any variables set here.
 
 # Specify Baxter's hostname
-#baxter_hostname="thing1.local" #york
-baxter_hostname="thing1.local"  #lancaster
+baxter_hostname="thing2.local" #york
+#baxter_hostname="thing1.local"  #lancaster
 
 # Set *Either* your computers ip address or hostname. Please note if using
 # your_hostname that this must be resolvable to Baxter.

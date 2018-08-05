@@ -1,0 +1,968 @@
+    1  sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+    2  sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+    3  sudo apt-get update
+    4  sudo apt-get upgrade
+    8  sudo apt-get install ros-indigo-desktop-full 
+
+Install ROS
+
+   29  chmod +x cuda_7.0.28_linux.run 
+   30  sudo ./cuda_7.0.28_linux.run 
+
+Attempt to install CUDA
+
+   33  sudo apt-get install git
+   34  sudo apt-get install cmake
+   35  git clone http://github.com/BVLC/caffe
+   36  sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+   37  sudo apt-get install --no-install-recommends libboost-all-dev
+   38  sudo apt-get install libatlas-base-dev
+   39  sudo apt-get install python-dev
+   40  sudo apt-get install libgflags-dev libgoogle-glog-dev liblmdb-dev
+
+Attempt to install Caffe
+
+   70  apt-cache search SoQt
+   71  sudo apt-get install libsoqt4-dev
+   72  sudo apt-cache search ode
+   73  sudo apt-cache search " ode "
+   74  sudo apt-get install libode-dev
+   75  sudo apt-cache search " fcl "
+   76  sudo apt-cache search collision
+   77  sudo apt-cache search "flexabile collision"
+   78  sudo apt-cache search "flexable collision"
+   79  sudo apt-cache search "flexible collision"
+   80  sudo apt-cache search "flexible"
+   81  apt-cache search bullet
+   82  sudo apt-get install libbullet-dev libbullet-extras-dev 
+   83  apt-cache search openscenegraph
+
+Install some of the dependencies for Trajopt. Note that Trajopt relies on newer versions of a lot of these libraries than are available on 14.04. 
+
+Also, most of these libraries hardcode incorrect paths to parts of each other. 
+
+It's nearly impossible to tell what's wrong with openrave, due to the number of compiler warnings.
+
+ 
+   80  sudo cp cuda/include/* /usr/local/cuda/include/
+   81  sudo cp cuda/lib64/* /usr/local/cuda/lib64/
+
+Install cudann (yes, by copying files)
+
+   82  cd ~/caffe/
+   83  ls
+   84  cp Makefile.config.example Makefile.config
+   85  nano Makefile.config
+   86  make all
+   87  nano Makefile.config
+   88  make all
+   89  ls
+   90  cmake  -DBUILD_SHARED_LIB=ON
+   91  mkdir cmake_build
+   92  cd cmake_build/
+   93  cmake ../ -DBUILD_SHARED_LIB=ON
+   94  ls
+   95  mke -j2
+   96  make -j 12
+   97  ls
+   98  cmake ../ -DBUILD_SHARED_LIB=ON
+   99  make -j 12
+  100  cmake ../ -DBUILD_SHARED_LIB=ON
+  101  cmake .. -DBUILD_SHARED_LIB=ON
+  102  ls
+  103  cd ../
+  104  ls
+  105  make -j 12
+  106  ls
+  107  nano CMakeLists.txt 
+  108  nano CaffeConfig.cmake 
+  109  nano CaffeTargets.cmake 
+  110  ls build
+  111  cd ../
+  112  ls
+  113  mkdir code
+  114  mv code/ Code
+  115  mv caffe/ Code/
+
+Might have made caffe as a shared lib and installed it. 
+
+  120  git clone https://github.com/joschu/trajopt
+  121  cd trajopt/
+  122  mkdir build_trajopt
+  123  cd build_trajopt/
+  124  cmake .. 
+  125  cd ../
+
+Trajopt won't build unless openrave is installed
+
+  126  sudo add-apt-repository ppa:openrave/testing
+  127  sudo apt-get update
+  128  sudo apt-get upgrade
+  129  uname
+  130  uname -a
+  131  sudo add-apt-repository ppa:openrave/release
+  132  sudo apt-get update
+  133  sudo apt-get install openrave
+
+Don't do this, there are no modern openrave PPAs. 
+
+  134  git clone --branch latest_stable https://github.com/rdiankov/openrave.git
+  135  ls
+  136  cd openrave/
+  137  ls
+  138  ccmake build
+  139  sudo apt-get install cmake-curses-gui 
+  140  ls
+  141  mkdir build
+  142  cd build/
+  143  cmake ..
+  144  apt-cache search openscene
+  145  apt-cache search openscenegraph
+  146  sudo apt-get install openscenegraph
+  147  cmake ..
+  148  cd ../../
+
+Don't do this either, the version of openscene graph in the 14.04 repos is too old for modern versions of openrave. 
+
+  149  git clone https://github.com/flexible-collision-library/fcl
+  150  cd fcl/
+  151  mkdir build
+  152  cd build
+  153  cmake ..
+
+Try to install fcl, find that it needs libccd
+
+  154  apt-cache search libccd
+  155  sudo apt-get install ros-indigo-libccd
+  156  cd ../../
+  157  git clone https://github.com/danfis/libccd
+  158  cd libccd/
+  159  ls
+  160  mdkir build && cd build
+  161  mkdir build && cd build
+  162  cmake ..
+  163  ls
+  164  make
+  165  sudo make install
+
+Make and install libccd
+
+  166  cd ../../fcl/build/
+  167  cmake ..
+  168  cd ../../
+  169  git clone http://octomap.github.com
+  170  cd -
+  171  make
+  172  sudo make install
+
+Make and install fcl
+
+  173  cd ../../openrave/build/
+  174  cmake ..
+  175  cd ../../
+
+Openrave still won't build because it needs a recent version of OSG
+
+  176  git clone https://github.com/openscenegraph/OpenSceneGraph/tree/OpenSceneGraph-3.4.0
+  177  git clone --branch OpenSceneGraph-3.4.0 https://github.com/openscenegraph/OpenSceneGraph.git
+  178  cd OpenSceneGraph/
+  179  ls
+  180  mkdir build && cd build
+  181  cmake ..
+  182  make && sudo make install && sudo make install_ld_conf
+
+Install OSG
+
+   82  ./grbgetkey b33926b8-f562-0533-f6cf-58b87e989f97
+
+Get a key for Gurobi, stick it in the home dir.
+
+Openrave won't build because it wants to make a plugin for fcl that depends on fcl/collision.h, which doesn't exist. 
+The closest thing to an fcl/collision.h is either the one in fos (/opt/ros/indigo/include/fcl/collsion.h) or 
+the one in the new version of fcl, /usr/local/include/fcl/narrowphase/collsion.h. There's also a collsion.h in ode. 
+
+Adding ROS stuff to the path by sourcing /opt/ros/indigo/setup.bash gets the compilation further, but it fails on
+argument count mismatches with ROS, so clearly those are old headers that shouldn't be used. 
+
+  320  cmake -DOPT_PLUGINS=OFF ..
+  321  make
+  322  sudo make install
+
+Gave up on fcl plugins, turned off plugins and compiled/installed openrave
+
+Attempt to install Trajopt fails with these errors:
+
+Gurobi found
+-- Boost version: 1.54.0
+-- Found the following Boost libraries:
+--   python
+CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
+Please set them or make sure they are set and tested correctly in the CMake files:
+GUROBI_LIBRARY (ADVANCED)
+    linked by target "sco" in directory /home/csrobot/Code/trajopt/src/sco
+
+-- Configuring incomplete, errors occurred!
+
+That's right: Gurobi found, followed by Gurobi not being found. 
+
+I found my own previous message on the internet, and attempted to fix. 
+
+ cmake .. -DGUROBI_LIBRARY=/home/csrobot/Code/gurobi702/linux64/lib/libgurobi70.so
+
+Failed due to not finding openrave/openrave.h, which is in /usr/local/include/openrave-0.9/openrave/openrave.h
+Trajopt's cmake does have a find openrave section
+
+Deleteing and remaking the trajopt build directory seems to have fixed it. It seems cmake will not regenerate
+anything that it generated already, even if that thing is bad, unless you clean and redo it. 
+
+ Got a lot of OpenSceneGraph linking errors related to "virtual thunks" 
+
+Rebooted, rebooting doesn't help
+
+One of openrave or trajopt wants more than a 3.2 version of openscenegraph. It was probably openrave, since
+removing all versions of OSG on the system, installing libopenscenegraph-dev seems to have made it possible
+to configure trajopt. 
+
+Need to check if that broke openrave, since openrave apparently has the ability to turn off OSG-related stuff. 
+Yes, Openrave needs OSG 3.4, but that breaks trajopt, so reinstall openrave without OSG. 
+
+Follow the instructions in baxter_ws to set up the baxter workspace. Those instructions are reproduced below. 
+
+if you don't have "rosws" on your path: sudo apt-get install python-rosinstall
+
+In the src directory of the beginings of an empty catkin workspace:
+
+rosws init
+rosws merge /opt/ros/$ROS_DISTRO
+rosws merge https://code.cs.uml.edu/baxter/baxter_ws/blobs/raw/one-armed-bandit/workspace.rosinstall
+rosws up
+catkin_workspace_init
+cd ..
+catkin_make
+source devel/setup.bash
+
+Note that the URL for the second merge command is wrong, and bitbucket won't let us grab blobs the way 
+gitorious would, so just copy the file and merge it with 'rosws merge ./workspace.rosinstall'
+
+Install the drivers for the dynamixels. 
+
+sudo apt-get install ros-indigo-dynamixel-controllers 
+
+Clone agile grasp
+
+git clone https://github.com/atenpas/agile_grasp2
+
+DON'T DO THIS. The github version is old and stale, use bitbucket, although that didn't work either, and I eventually ended up copying what was on the previous laptop over to the new one. 
+
+Agile grasp compilation doesn't find Caffe, or the CaffeConfig.cmake, so export the location of caffe to 
+fix it
+
+export Caffe_DIR="/home/csrobot/Code/caffe"
+
+We need PCL 1.8, not the 1.7 that gets installed, so also install PCL 1.8 
+  518  mv ~/Downloads/pcl-pcl-1.8.0.tar.gz ./
+  519  tar -xzvf pcl-pcl-1.8.0.tar.gz 
+  520  cd pcl-pcl-1.8.0/
+  522  mkdir build && cd build
+  524  cmake -DCMAKE_BUILD_TYPE=Release ..
+  525  make -j2
+  526  nano ../../arm_wkspc/src/agile_grasp2/CMakeLists.txt 
+  527  sudo make install
+
+Modify CMakeLists.txt for agile grasp to have this
+
+set(PCL_DIR "/usr/share/pcl-1.8")
+find_package(PCL 1.8 EXACT REQUIRED)
+
+At present, it requires cloning of laser_detector from 
+git clone https://github.com/DeepBlue14/laser_detection
+but this is for the object separator/object detector that we're not using anymore. There's also apparently 
+an object_separator that we don't seem to have anymore that object_filter depends on. 
+Commenting it out of the object filter package.xml doesn't seem to have helped, but removing it from CMakeLists.txt seems to have gotten it. 
+
+Having two versions of PCL makes compilation of scooter_ui/cloud_segmenter warn about possible hiding for the linker path. This can be fixed if we ever use the cloud_segmenter again. 
+
+caffe importing apparently doesn't do well pointing to a user-directory version, the error is:
+
+CMake Error in agile_grasp2/CMakeLists.txt:
+  Imported target "caffe" includes non-existent path
+
+    "/home/csrobot/caffe/include"
+
+  in its INTERFACE_INCLUDE_DIRECTORIES.  Possible reasons include:
+
+  * The path was deleted, renamed, or moved to another location.
+
+  * An install or uninstall procedure did not complete successfully.
+
+  * The installation package was faulty and references files it does not
+  provide.
+
+Which is fair, since the path is /home/csrobot/Code/caffe/include. Chances are that Caffe moves this stuff around when it installs, and so setting the Caffe_DIR isn't sufficient. 
+
+csrobot@scooter-arm:~/Code/caffe/cmake_build$ cmake .. -DBUILD_SHARED_LIB=ON
+CMake Error: The current CMakeCache.txt directory /home/csrobot/Code/caffe/CMakeCache.txt is different than the directory /home/csrobot/caffe where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt
+
+Oh ho. That looks related. 
+
+The makefile version of the caffe make doesn't create the tools needed for Cmake to fine caffe, and probably doesn't generate the shared lib. The cmake version does (probably) generate the shared lib, but doesn't have the compatibility with CUDA 7.5, or any CUDA less than 8, because there's no way to turn off the comfpute_60 and compute_61 architectures. 
+
+The piece I want removed from the cmake files is -gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;
+So I wrote a script that goes through all the directories and just deletes that. 
+
+Unfortunately, that doesn't work, since running make regenerates all the cmake files. 
+
+I installed CUDA 8.0 via the deb package, but that doesn't fix the problem. Probably need to edit .bashrc, reboot, and wave a dead chicken over it. 
+
+Rebooting doesn't help, still detects cuda 7.0
+
+Deleting the old cuda dir in /usr/local seems to have gotten it, caffe built. The header files aren't being found. 
+
+There is a copy, it just doesn't get put on the include path. Copying it to the include path made things that ere missing it build. 
+cp -r .build_release/include/caffe/proto include/caffe/
+
+In fact, it looks like everything built. Time to image the machine. 
+
+
+----------- Attempts to get networking to work between the Baxter computer and the laptop ----------------
+
+System uses avahi, started with the command 
+sudo avahi-autoipd eth0
+
+On the old laptop (Claw), this gets the IP 169.254.196.178
+
+The baxter computer is thing2, and I can reach it from the laptop after starting avahi (didn't check before)
+That was apparently over the wificd network. The laptop connection to pterodactyl is not reliable. 
+Connecting to pterodactyl again doesn't seem to have fixed it. 
+
+Eth0 isn't showing any IP address configured, avahi or not. 
+
+The avahi-configured interface isn't staying up. It works as long as it exists, but then it crashes or otherwise disappears very quickly
+
+Seems related to connecting to pterodactyl, possibly because pterodactyl may have some conflicting avahi-related stuff. Solution appears to be "Don't connect to pterodactyl"
+
+Clocks are in apparently reasonable synchrony, but should be set so one computer uses the other for NTP
+
+Avahi-autoipd continues to fail, even when the computer is not connected to any wifi connection. 
+
+Deleting the wired connection might have helped. 
+
+Something in the active_sensing launch path seems to be looking for Claw.local
+Couldn't find an AF_INET address for [Claw.local]
+But grep doesn't turn up anything. 
+
+A few kinect-related messages fail in the launch file as well. 
+
+[ERROR] [1493918848.692390835]: Unsupported color video mode - Resolution: 640x480@30Hz Format: RGB888
+[ INFO] [1493918848.698392981]: Loading robot model 'baxter'...
+[ WARN] [1493918848.698475500]: Skipping virtual joint 'world_joint' because its child frame 'torso' does not match the URDF frame 'base'
+[ INFO] [1493918848.698495491]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[ INFO] [1493918848.867687522]: Loading robot model 'baxter'...
+[ WARN] [1493918848.867767794]: Skipping virtual joint 'world_joint' because its child frame 'torso' does not match the URDF frame 'base'
+[ INFO] [1493918848.867779351]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[ INFO] [1493918848.969783840]: Publishing maintained planning scene on 'monitored_planning_scene'
+[ INFO] [1493918848.976371230]: MoveGroup debug mode is OFF
+Starting context monitors...
+[ INFO] [1493918848.976406838]: Starting scene monitor
+[ INFO] [1493918848.983496295]: Listening to '/planning_scene'
+[ INFO] [1493918848.983531599]: Starting world geometry monitor
+[ INFO] [1493918848.990916725]: Listening to '/collision_object' using message notifier with target frame '/base '
+[ INFO] [1493918848.997182389]: Listening to '/planning_scene_world' for planning scene world geometry
+[ WARN] [1493918848.998345054]: Resolution not specified for Octomap. Assuming resolution = 0.1 instead
+Initializing node... 
+[ INFO] [1493918849.054443941]: Stereo is NOT SUPPORTED
+[ INFO] [1493918849.054767693]: OpenGl version: 3 (GLSL 1.3).
+[ INFO] [1493918849.149492843]: Listening to '/attached_collision_object' for attached collision objects
+Context monitors started.
+Initializing joint trajectory action server...
+[ INFO] [1493918849.222343898]: Initializing OMPL interface using ROS parameters
+[ INFO] [1493918849.299952024]: Using planning interface 'OMPL'
+[ INFO] [1493918849.340826783]: Param 'default_workspace_bounds' was not set. Using default value: 10
+[ INFO] [1493918849.342665342]: Param 'start_state_max_bounds_error' was set to 0.1
+[ INFO] [1493918849.344686669]: Param 'start_state_max_dt' was not set. Using default value: 0.5
+[ INFO] [1493918849.346489597]: Param 'start_state_max_dt' was not set. Using default value: 0.5
+[ INFO] [1493918849.348528148]: Param 'jiggle_fraction' was set to 0.05
+[ INFO] [1493918849.350589973]: Param 'max_sampling_attempts' was not set. Using default value: 100
+[ INFO] [1493918849.350764062]: Using planning request adapter 'Add Time Parameterization'
+[ INFO] [1493918849.350796753]: Using planning request adapter 'Fix Workspace Bounds'
+[ INFO] [1493918849.350812669]: Using planning request adapter 'Fix Start State Bounds'
+[ INFO] [1493918849.350835394]: Using planning request adapter 'Fix Start State In Collision'
+[ INFO] [1493918849.350861664]: Using planning request adapter 'Fix Start State Path Constraints'
+Running. Ctrl-c to quit
+[ INFO] [1493918849.898637234]: Device "1d27/0600@1/6" found.
+[ INFO] [1493918849.898704364]: Device "1d27/0601@1/4" found.
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ INFO] [1493918853.124862743]: Loading robot model 'baxter'...
+[ WARN] [1493918853.124926893]: Skipping virtual joint 'world_joint' because its child frame 'torso' does not match the URDF frame 'base'
+[ INFO] [1493918853.124947511]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[ INFO] [1493918853.279364065]: Loading robot model 'baxter'...
+[ WARN] [1493918853.279416825]: Skipping virtual joint 'world_joint' because its child frame 'torso' does not match the URDF frame 'base'
+[ INFO] [1493918853.279426853]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[ INFO] [1493918853.405740781]: Starting scene monitor
+[ INFO] [1493918853.414553576]: Listening to '/move_group/monitored_planning_scene'
+[ INFO] [1493918853.417036890]: waitForService: Service [/get_planning_scene] has not been advertised, waiting...
+[ INFO] [1493918854.427652500]: MoveItSimpleControllerManager: Waiting for /robot/limb/left/follow_joint_trajectory to come up
+[ INFO] [1493918858.419684829]: Failed to call service get_planning_scene, have you launched move_group? at /tmp/binarydeb/ros-indigo-moveit-ros-planning-0.7.8/planning_scene_monitor/src/planning_scene_monitor.cpp:480
+[ INFO] [1493918859.295670144]: No active joints or end effectors found for group ''. Make sure you have defined an end effector in your SRDF file and that kinematics.yaml is loaded in this node's namespace.
+[ INFO] [1493918859.298619683]: Constructing new MoveGroup connection for group 'left_arm' in namespace ''
+[ INFO] [1493918859.427769330]: MoveItSimpleControllerManager: Waiting for /robot/limb/left/follow_joint_trajectory to come up
+[kinect_r/driver-2] process has finished cleanly
+log file: /home/csrobot/.ros/log/bad8bf46-c2e8-11e6-9266-000af768787e/kinect_r-driver-2*.log
+[kinect_l/driver-16] process has finished cleanly
+log file: /home/csrobot/.ros/log/bad8bf46-c2e8-11e6-9266-000af768787e/kinect_l-driver-16*.log
+[ERROR] [1493918864.427993139]: MoveItSimpleControllerManager: Action client not connected: /robot/limb/left/follow_joint_trajectory
+
+
+Lots of error messages launching active sensing. Most of them were fixed by deleting a lot of unneeded stuff from the active_sensing.launch file, so it matches the one on the other laptop.
+
+Enabling the robot doesn't work
+[baxter - http://thing2.local:11311] csrobot@scooter-arm:~/Code/arm_wkspc$ rosrun baxter_tools enable_robot.py -e
+[ERROR] [WallTime: 1493919214.861811] Failed to enable robot
+
+The structure driver crashes
+
+process[structure_base_link3-14]: started with pid [17831]
+[ INFO] [1493919066.915690884]: Device "1d27/0600@1/6" found.
+[ INFO] [1493919066.915783141]: Device "1d27/0601@1/4" found.
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ERROR] [1493919067.097638403]: Unsupported color video mode - Resolution: 640x480@30Hz Format: RGB888
+[structure/driver-2] process has finished cleanly
+log file: /home/csrobot/.ros/log/bad8bf46-c2e8-11e6-9266-000af768787e/structure-driver-2*.log
+
+grasp planning can't figure out the CUDA version
+I0504 13:31:30.679797 18060 layer_factory.hpp:77] Creating layer input
+I0504 13:31:30.680817 18060 net.cpp:84] Creating Layer input
+I0504 13:31:30.680845 18060 net.cpp:380] input -> data
+F0504 13:31:30.684272 18060 syncedmem.hpp:22] Check failed: error == cudaSuccess (35 vs. 0)  CUDA driver version is insufficient for CUDA runtime version
+*** Check failure stack trace: ***
+[detect_grasps_active-1] process has died [pid 18060, exit code -6, cmd /home/csrobot/Code/arm_wkspc/devel/lib/agile_grasp2/detect_grasps __name:=detect_grasps_active __log:=/home/csrobot/.ros/log/41f8c7b8-30ef-11e7-8c59-38d5478fed5e/detect_grasps_active-1.log].
+log file: /home/csrobot/.ros/log/41f8c7b8-30ef-11e7-8c59-38d5478fed5e/detect_grasps_active-1*.log
+all processes on machine have died, roslaunch will exit
+
+Apparently installing CUDA without the driver doesn't install CUDA, so you need to drop back by like 30 major versions 375.something to 346.46 to get CUDA. Going to reboot and see if the computer still works. 
+
+THe computer only works in the sense that it still boots. Attempting to compile caffe again gets this
+CMake Warning at cmake/Dependencies.cmake:82 (message):
+  -- CUDA is not detected by cmake.  Building without it...
+Call Stack (most recent call first):
+  CMakeLists.txt:45 (include)
+
+
+-- OpenCV found (/usr/share/OpenCV)
+-- Found Atlas (include: /usr/include, library: /usr/lib/libatlas.so)
+-- NumPy ver. 1.8.2 found (include: /usr/lib/python2.7/dist-packages/numpy/core/include)
+-- Boost version: 1.54.0
+-- Found the following Boost libraries:
+--   python
+-- Could NOT find Doxygen (missing:  DOXYGEN_EXECUTABLE) 
+-- 
+-- ******************* Caffe Configuration Summary *******************
+-- General:
+--   Version           :   1.0.0-rc5
+--   Git               :   rc5-3-ge687a71
+--   System            :   Linux
+--   C++ compiler      :   /usr/bin/c++
+--   Release CXX flags :   -O3 -DNDEBUG -fPIC -Wall -Wno-sign-compare -Wno-uninitialized
+--   Debug CXX flags   :   -g -fPIC -Wall -Wno-sign-compare -Wno-uninitialized
+--   Build type        :   Release
+-- 
+--   BUILD_SHARED_LIBS :   ON
+--   BUILD_python      :   ON
+--   BUILD_matlab      :   OFF
+--   BUILD_docs        :   ON
+--   CPU_ONLY          :   OFF
+--   USE_OPENCV        :   ON
+--   USE_LEVELDB       :   ON
+--   USE_LMDB          :   ON
+--   USE_NCCL          :   OFF
+--   ALLOW_LMDB_NOLOCK :   OFF
+-- 
+-- Dependencies:
+--   BLAS              :   Yes (Atlas)
+--   Boost             :   Yes (ver. 1.54)
+--   glog              :   Yes
+--   gflags            :   Yes
+--   protobuf          :   Yes (ver. 2.5.0)
+--   lmdb              :   Yes (ver. 0.9.10)
+--   LevelDB           :   Yes (ver. 1.15)
+--   Snappy            :   Yes (ver. 1.1.0)
+--   OpenCV            :   Yes (ver. 2.4.8)
+--   CUDA              :   No
+
+
+Part of the reason is that despite the nvidia driver being the selected driver, and the one that Ubuntu indicates that it is using, the driver isn't being used. Instead, the intel video driver is being used. 
+
+Switched to nouveau and back and rebooted to see if the laptop would start using the driver it said it was already using. 
+
+Was eventually fixed by adding cuda to the path, after reinstalling cuda and the relevant driver for cuda 8.0. 
+
+Now grasp detection can't find caffe, which probably means there's a caffe path that isn't getting set. 
+Configured Caffe_DIR as above, and then rebuilt caffe and the agile_grasp system. Everything rebuilt, and agile grasp loaded and ran. 
+
+The robot also enables and disables now, so that was probably related to avaihi-autoipd not working really well. Deleting the wired connection seems to have kept avahi up, and I can still use atrvnw for internet. 
+
+Should be ready to rock, try end-to-end before calling Andreas/Marcus over to configure. 
+
+active_sensing_driving.py isn't on the version of the repo that I have on this laptop. I assume it didn't get checked in from the previous laptop, so I'm going to copy it over from there. 
+
+[ INFO] [1494011265.214747622]: Loading nodelet /structure/driver of type openni2_camera/OpenNI2DriverNodelet to manager structure_nodelet_manager with the following remappings:
+[ INFO] [1494011265.214790377]: /structure/depth -> /structure/depth
+[ INFO] [1494011265.214806242]: /structure/depth/image -> /structure/depth_registered/image_raw
+[ INFO] [1494011265.214813923]: /structure/depth_registered -> /structure/depth_registered
+[ INFO] [1494011265.214820117]: /structure/ir -> /structure/ir
+[ INFO] [1494011265.214825681]: /structure/rgb -> /structure/rgb
+[ INFO] [1494011265.214847672]: /structure/rgb/image -> /structure/rgb/image_raw
+[ INFO] [1494011265.218785539]: waitForService: Service [/structure/structure_nodelet_manager/load_nodelet] has not been advertised, waiting...
+[ INFO] [1494011265.263622490]: waitForService: Service [/structure/structure_nodelet_manager/load_nodelet] is now available.
+[ INFO] [1494011279.373086350]: Bond broken, exiting
+
+Both of the cameras area failing with very similar messages. 
+
+Might be related to image transport or connectivity between the two systems having trouble with bond timeouts. 
+
+I already have image transport and the plugins installed, so it's not likely that. 
+
+Doesn't appear to be timing related, watch -n0.1 ntpq -p shows the clocks in lockstep
+
+Online sources list rebooting and reistalling everything as potential fixes. It should work without reinstalling everything, although I worry a little about ROS advancing on the laptop (same version, but patches or whatever) and not advancing on the control PC. 
+
+Rebooting the control PC seems to have fixed it (runs for more than 18 seconds anyway)
+The control PC had previously been up for 141 days, so there may be some slow thing that goes wrong after a few months on, or becomes laggy. 
+
+
+5/15/17 
+
+Everything still seems to run, but I'm having problems with finding cloudprocpy, which makes me suspect that the trajopt python libs didn't build properly. Also, there's no trajopt lib directory, so that's a little odd. 
+
+The trajopt lib dir is in the build dir, so I updated the pythonpath setting. 
+
+5/16/17 
+
+The trajopt tests only half work. 
+
+Rebooting doesn't seem to have fixed the trajopt problem with cloudprocpy not being on the path. Might not be related to trajopt, as simply starting python and doing "import trajopt" works. I assumed it was because trajopt has a file called cloudprocpy in trajopt/src/cloudproc. 
+
+Chances are it didn't get built, there's a cmake option called BUILD_CLOUDPROC=ON, and the test data is missing, so that probably explains the other failures too. 
+
+I can't get the test data (download.py in the bigdata/ directory) because the UML network is a dumpster fire. 
+
+Cloudproc doesn't build, probably related to having a bunch of deprecated function calls in it. 
+
+I copied the (probably hacked) version of trajopt from the old laptop, and finally got it to configure with the command:
+ cmake ../ -DBUILD_HUMANOIDS=ON -DBUILD_CLOUDPROC=ON -DGUROBI_LIBRARY=/home/csrobot/Code/gurobi702/linux64/lib/libgurobi70.so
+
+It still has warnings about a couple of deprecated commands, but those could be fixed by adding 
+#include <pcl/ros/conversions.h> to the relevant files. 
+
+Got everything running, but calibration is wrong. Attempting to calibrate shows that I don't have the robot state or model set up. Setting 
+rosparam set /robot_description "/home/csrobot/Code/arm_wkspc/src/baxter_common/single_description/urdf/baxter.urdf"
+got me a different error "No Planning Model", and a claim that that file was empty (it isn't)
+
+I was using the wrong thing, "Robot State" != "Robot Model", even if they have the same icon in rviz. 
+
+[baxter - http://thing2.local:11311] csrobot@scooter-arm:~/Code/arm_wkspc$ python src/active_sensing/scripts/active_sensing_driving.py 1 0
+You can set logging level with TRAJOPT_LOG_THRESH. Valid values: FATAL ERROR WARN INFO DEBUG TRACE. Defaulting to INFO
+Initializing ...
+2017-05-16 19:10:53,841 openrave [WARN] [plugindatabase.h:395 RaveDatabase::Init] /usr/local/lib/openrave0.9-plugins doesn't exist
+2017-05-16 19:10:53,841 openrave [WARN] [plugindatabase.h:577 InterfaceBasePtr OpenRAVE::RaveDatabase::Create] Failed to create name fcl_, interface collisionchecker
+2017-05-16 19:10:53,841 openrave [WARN] [plugindatabase.h:577 InterfaceBasePtr OpenRAVE::RaveDatabase::Create] Failed to create name ode, interface collisionchecker
+2017-05-16 19:10:53,841 openrave [WARN] [plugindatabase.h:577 InterfaceBasePtr OpenRAVE::RaveDatabase::Create] Failed to create name bullet, interface collisionchecker
+2017-05-16 19:10:53,841 openrave [WARN] [plugindatabase.h:577 InterfaceBasePtr OpenRAVE::RaveDatabase::Create] Failed to create name pqp, interface collisionchecker
+2017-05-16 19:10:53,859 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,859 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,859 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,860 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,860 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,861 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,861 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,862 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,862 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,863 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,863 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,864 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,864 openrave [WARN] [colladareader.cpp:2228 ColladaReader::FillGeometryColor] transparecy is 1.000000, which means the item will be rendered invisible, this must be a mistake so setting to opaque (1)
+2017-05-16 19:10:53,866 openrave [WARN] [plugindatabase.h:577 InterfaceBasePtr OpenRAVE::RaveDatabase::Create] Failed to create name ikfast, interface module
+2017-05-16 19:10:53,866 openrave [WARN] [xmlreaders-core.cpp:2585 ManipulatorXMLReader::endElement] Failed to load IKFast module
+2017-05-16 19:10:53,866 openrave [WARN] [xmlreaders-core.cpp:2591 ManipulatorXMLReader::endElement] failed to create iksolver /home/csrobot/Code/arm_wkspc/src/active_sensing/openrave/libik.so
+2017-05-16 19:10:53,867 openrave [WARN] [plugindatabase.h:577 InterfaceBasePtr OpenRAVE::RaveDatabase::Create] Failed to create name IdealController, interface controller
+GraspPlanningNode: initializing ROS
+Waiting for structure to connect ...
+Using linear planner.
+Select the item with the laser and hit Enter...
+Waiting for laser point....
+   >8- - - - - snip! - - - - >8
+Recieved laser point, [ 0.786 -0.279 -0.055].
+Waiting for Asus-1 to connect ...
+Waiting for Asus-1...
+Received combined Asus cloud with 263164 points.
+Traceback (most recent call last):
+  File "src/active_sensing/scripts/active_sensing_driving.py", line 121, in <module>
+    laserPoint, sensorKeepout, nSphereSamples, minViewDownAngle, obstacleCloudTree, arm)
+  File "/home/csrobot/Code/arm_wkspc/src/active_sensing/scripts/view_planner.py", line 63, in sampleFirstRandomViewpoint
+    mySampleConfigs = arm.calcIKForTGivenLink(T, arm.viewEffector)
+  File "/home/csrobot/Code/arm_wkspc/src/active_sensing/scripts/arm.py", line 139, in calcIKForTGivenLink
+    return ku.ik_for_link(T, self.manip, linkName, return_all_solns=True, filter_options=opts)
+  File "/home/csrobot/Code/trajopt/trajoptpy/kin_utils.py", line 126, in ik_for_link
+    return manip.FindIKSolutions(T_w_ee, filter_options)
+openravepy._openravepy_.openravepy_ext.openrave_exception: openrave (Failed): [virtual bool OpenRAVE::RobotBase::Manipulator::FindIKSolutions(const OpenRAVE::IkParameterization&, const std::vector<double>&, std::vector<std::vector<double> >&, int) const:221] (!!pIkSolver) failed manipulator baxter:left_arm does not have an IK solver set
+
+Obviously, openrave is still broken. Since it fails to load the ik solver, it blows up when it goes to move the arm. This is probably because of the plugins not building, which is because of me not wanting to waste another week on it.
+
+Deleted openrave's build directory and rebuilt it, without turning off plugins. The build has a ton of warnings. I don't even really want to guess why they create and then don't use literally hundreds of variables. 
+
+Anyway, this time the plugins built and installed. Magic. >:-(
+
+Imaging the computer now.
+
+5/17/17
+
+Trying to find disconnect between scanning the object and sending the point cloud to agile grasp
+
+GraspPlanningNode: initializing ROS
+[WARN] [WallTime: 1495041423.295329] Could not process inbound connection: topic types do not match: [sensor_msgs/PointCloud2] vs. [agile_grasp2/CloudIndexed]{'topic': '/cloud_infinitam', 'tcp_nodelay': '0', 'md5sum': '1158d486dd51d683ce2f1be655c3c181', 'type': 'sensor_msgs/PointCloud2', 'callerid': '/detect_grasps_active'}
+Waiting for structure to connect ...
+Using linear planner.
+
+Might be related. Also, the structure sensor doesn't appear to work on USB3 either, so maybe this was all a huge waste of time. 
+
+Plugging the primesense into the forward USB 2 port and the structure into the USB3 port seems to have fixed it. 
+
+The problem where grasp detection never got a point cloud from the script is because they had different message types, which is configured in fixed_detect_grasps_active.launch by setting cloud_type to 3. 
+
+Now it just doesn't detect grasps. 
+
+It's getting point clouds with no points in them. 
+
+5/17/17 
+
+The point clouds have points, the status message was just wrong. 
+
+Also, neither the github nor the bigbucket versions of agile_grasp2 work, for different reasons, so I copied the directory off the old laptop. 
+
+It can't link to something related to kdtree
+
+/home/csrobot/Code/arm_wkspc/devel/lib/libcloud_camera.so: undefined reference to `pcl::search::KdTree<pcl::PointXYZRGBA, pcl::KdTreeFLANN<pcl::PointXYZRGBA, flann::L2_Simple<float> > >::KdTree(bool)'
+collect2: error: ld returned 1 exit status
+make[2]: *** [/home/csrobot/Code/arm_wkspc/devel/lib/agile_grasp2/test_cnn] Error 1
+make[1]: *** [agile_grasp2/CMakeFiles/test_cnn.dir/all] Error 2
+make: *** [all] Error 2
+
+Switching the order of the kdtree includes in cloud_camera.h "fixes" this problem, in the sense that the code compiles. ¯\_(ツ)_/¯
+
+No message appears to get sent on /cloud_infinitam, which is published by active_sensing, but restarting all the nodes cleared that up, and I got it to grab a thing. 
+
+5/22/17
+
+Getting all three cameras set up
+
+One launch file, launch the cameras and their associated static transforms
+
+lsusb output
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 010: ID 8087:0a2a Intel Corp. 
+Bus 001 Device 011: ID 1d27:0601 ASUS                               <---- Primesense
+Bus 001 Device 016: ID 1d27:0601 ASUS                               <---- Primesense
+Bus 001 Device 003: ID 04f2:b450 Chicony Electronics Co., Ltd       
+Bus 001 Device 015: ID 1d27:0600 ASUS                               <---- Structure
+Bus 001 Device 014: ID 05e3:0608 Genesys Logic, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+Left primesense is in rearmost USB 2.0 port, right primesense is in frontmost USB 2.0 port
+L/R are from perspective of a person sitting on the scooter
+
+Commands used to launch the cameras on the time I got it working:
+roslaunch openni2_launch openni2.launch device_id:=1d27/0600@1/15 camera:=structure
+roslaunch openni2_launch openni2.launch device_id:="1d27/0601@1/11" camera:=left
+roslaunch openni2_launch openni2.launch device_id:=1d27/0601@1/16 camera:=right
+
+5/23/17
+
+
+Attempts made
+aspring bottle, success
+seasoning salt, on side, success
+Dog bone, success
+
+Added some clutter
+Sunscreen, success, but not very clean
+Apple juice, failed, nothing reachable 
+Apple juice (again), failed, not a good grasp
+Dog bone, success
+robot with gear, success
+advil box, failure, got the apple juice instead (reflection of laser?)
+advil box (again), got the font edge of the table instead
+
+Moved table closer
+advil again, got the salt instead
+green deodorant, success, but intially confused about laser location
+  Do we maybe want user feedback to say when the laser is out of the workspace?
+advil, success, but not great
+
+Trajopt or arm control ran into problems with occasionally making slow, jerky motions
+
+Tried recalibrating arm 
+
+Tried for apple juice, got advil bottle
+Tried for apple juice, got apple juice
+Tried for salt
+
+
+Started having problems with laser detection 
+
+[ INFO] [1495570830.946110877]: falling back to motion contours: 0
+[ERROR] [1495570830.946290522]: No matching contours! m: 0 b: 0 selectedPoint: (-0.971, -0.936, 2.467)
+Failed to find match for field 'rgb'.
+[ INFO] [1495570831.158076263]: falling back to motion contours: 0
+[ERROR] [1495570831.158166435]: No matching contours! m: 0 b: 0 selectedPoint: (-0.971, -0.936, 2.467)
+[ WARN] [1495570831.271648005]: Got invalid command 1
+[ INFO] [1495570831.411303241]: falling back to motion contours: 0
+[ERROR] [1495570831.411508996]: No matching contours! m: 0 b: 0 selectedPoint: (-0.971, -0.936, 2.467)
+Failed to find match for field 'rgb'.
+[ INFO] [1495570831.748924234]: falling back to motion contours: 0
+[ERROR] [1495570831.749184921]: No matching contours! m: 0 b: 0 selectedPoint: (-0.971, -0.936, 2.467)
+[ WARN] [1495570831.804015093]: Got invalid command 1
+^C[ INFO] [1495570831.996742725]: falling back to motion contours: 0
+[ERROR] [1495570831.997099009]: No matching contours! m: 0 b: 0 selectedPoint: (-0.971, -0.936, 2.467)
+
+Overlapping areas of the two cameras result in a lot of NaN values for getting the z location of the point.
+
+This means the laser pointer location gets unreliable, which means the system frequently loses track of where the laser is. 
+
+Also, the motion back from picking the object up doesn't seem to do a good job avoiding objects. This needs troubleshooting, since the code seems to be using it. 
+
+The intial move to the nominal position doesn't even try to avoid hitting stuff. 
+
+6/15/17
+
+Updated system because openni drivers for the primesense were not responding well to being subscribed to and unsubscribed from. Eventually, they would just randomly stop sending messages. 
+
+Predictably, this broke cuda, but at least it left the nvidia driver enabled, unfortunately, it's the wrong driver. 
+
+Downloaded the runfile installer, tried to run it 
+
+2035  wget https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
+2036  chmod +x cuda_8.0.61_375.26_linux-run 
+2037  sudo ./cuda_8.0.61_375.26_linux-run 
+
+Needed to kill X, so went to terminal with ctrl+alt+f1, did sudo service lightdm stop, installed package, came back to a broken X server. 
+
+Uninstalled, got the deb version instead, tried that. 
+
+Apparently, that worked. Not sure if rebooting will break everything, though. 
+
+
+7/12/17
+
+Trying to make cameras start up and shutdown reliably. 
+
+First step is making USB plugging behave deterministicly. 
+http://wiki.ros.org/robotino_cam/Tutorials/Using%20multiple%20cameras has directions on how to set up USB plugging so that e.g. left and right cameras are loaded at the same places. 
+
+Primesense cameras don't have serial numbers, so they can't be forced to behave deterministicly. There's no way to identify a camera as e.g. the left or right camera, or really identify it at all, so there's no remapping the camera to a known location via udev. 
+
+Also, firefox is now broken on the laptop for no reason. Right clicking sometime causes it to freeze temporariliy instead of bringing up a context menu. Clicking drop-downs in the configuration pages for firefox also causes this problem. 
+
+The "failed to set priority" message is because openni tries to set the USB async thread to "critical", and fails, because it's not running as root. One would assume they could check that and then not try it if you're not root. Anyway, it might be possible to roslaunch as root to make it go away, but the problem is probably not fatal, just annoying. 
+
+https://github.com/PrimeSense/Sensor/blob/unstable/Platform/Linux/Install/55-primesense-usb.rules
+Tried that, since it might help with some of the failures to open the device. 
+
+Rebooted, now I don't have a visible mouse cursor. Thanks, Ubuntu. Rebooting fixed that. 
+
+Starting the cameras went as well/poorly as it ever has. 
+
+[ INFO] [1499883859.338827070]: Initializing nodelet with 4 worker threads.
+[ INFO] [1499883859.946931679]: Device "1d27/0600@1/4" found.
+[ INFO] [1499883859.946998428]: Device "1d27/0601@1/9" found.
+[ INFO] [1499883859.947013723]: Device "1d27/0601@1/11" found.
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ INFO] [1499883860.288179077]: Initializing nodelet with 4 worker threads.
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ INFO] [1499883860.418374235]: Device "1d27/0600@1/4" found.
+[ INFO] [1499883860.418431450]: Device "1d27/0601@1/9" found.
+[ INFO] [1499883860.418450743]: Device "1d27/0601@1/11" found.
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ INFO] [1499883860.681550947]: Device "1d27/0600@1/4" found.
+[ INFO] [1499883860.681619036]: Device "1d27/0601@1/9" found.
+[ INFO] [1499883860.681763304]: Device "1d27/0601@1/11" found.
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ WARN] [1499883860.788200791]: Could not query serial number of device "std::string openni2_wrapper::OpenNI2DeviceManager::getSerial(const string&) const @ /tmp/binarydeb/ros-indigo-openni2-camera-0.2.7/src/openni2_device_manager.cpp @ 241 : Device open failed:  Could not open "1d27/0601@1/9": Failed to set USB interface!
+":
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ WARN] [1499883860.799685006]: Could not query serial number of device "std::string openni2_wrapper::OpenNI2DeviceManager::getSerial(const string&) const @ /tmp/binarydeb/ros-indigo-openni2-camera-0.2.7/src/openni2_device_manager.cpp @ 241 : Device open failed:  Could not open "1d27/0601@1/11": Failed to set USB interface!
+":
+[ WARN] [1499883860.800040266]: Could not query serial number of device "std::string openni2_wrapper::OpenNI2DeviceManager::getSerial(const string&) const @ /tmp/binarydeb/ros-indigo-openni2-camera-0.2.7/src/openni2_device_manager.cpp @ 241 : Device open failed:  Could not open "1d27/0601@1/9": Failed to set USB interface!
+":
+Warning: USB events thread - failed to set priority. This might cause loss of data...
+[ERROR] [1499883860.991763574]: Unsupported color video mode - Resolution: 640x480@30Hz Format: RGB888
+close failed in file object destructor:
+sys.excepthook is missing
+lost sys.stderr
+close failed in file object destructor:
+sys.excepthook is missing
+lost sys.stderr
+forcing depth registration on /rgbd_cam_2/driver
+forcing depth registration on /rgbd_cam_1/driver
+
+The "failed to set priority" isn't relevant. 
+
+Failure to query the serial number is problem, but one that only comes up on the primesenses (they're on 9 and 11 for this boot/run of the script) and may be because they don't have serial numbers. 
+
+The "Unsupported video mode" message might be fixable, something is probably asking the structure for color video, and it doesn't do that. 
+
+The loss of sys.excepthook and sys.stderr are caused by a python script writing to something that doesn't read it, and then the writer getting closed. At a guess, this is happening in line 51 of the kinectstuff script, which calls rosrun dynamic_reconfigure dynparam, but an attempt to redirect to /dev/null didn't fix it. 
+
+"forcing depth registration" is what we want to see, if that doesn't happen, the cameras probably aren't publishing. 
+
+Great. Now that I'm looking at it, it's not doing anything wrong. 
+
+7/17/17
+
+Trying to bring infinitam scanning back. Branch "scooter" has it, "scooter2" doesn't. 
+
+https://ams_uml@bitbucket.org/atp/active_sensing.git
+That's the URL to check out the branch, I'm using git diff to see the differences, but the merge is kind of manual because the differences are not just infinitam. 
+
+Infinitam isn't installed anymore, because this is the new scooter laptop. Attempting to install using the instructions on https://github.com/ethz-asl/infinitam fails because A) they have their git command wrong, B) their build isn't comaptible with the catkin_build command and has an undocumented dependency on catkin_simple and C) I probably don't have OpenNi installed. 
+
+Catkin_simple can be cloned into my workspace, but then it wants glog_catkin, which is some sort of google logging thing for catkin. 
+
+http://answers.ros.org/question/243192/catkin_make-vs-catkin-build/ warns against using two different build tools in the same workspace. Since the whole project is catkin_make, going over to catkin build is probably a bad idea. 
+
+7/18/17 
+
+Got infinitam and ros stuff for it off the old laptop, and installed OpenNI2 for it. Cmake required the following args
+cmake ../InfiniTAM -DOPEN_NI_ROOT=/usr/lib/OpenNI2 -DOpenNI_INCLUDE_DIR=/usr/include/openni2
+
+Make yells a lot about deprecated architectures for cuda, and then fails with undefined references to a load of openni functions
+
+{There were a bunch more here}...
+OpenNIEngine.cpp:(.text+0x1e37): undefined reference to `oniStreamDestroy'
+OpenNIEngine.cpp:(.text+0x1e46): undefined reference to `oniStreamDestroy'
+OpenNIEngine.cpp:(.text+0x1ee1): undefined reference to `oniDeviceGetInfo'
+OpenNIEngine.cpp:(.text+0x1ef0): undefined reference to `oniDeviceIsPropertySupported'
+OpenNIEngine.cpp:(.text+0x1f08): undefined reference to `oniDeviceIsPropertySupported'
+OpenNIEngine.cpp:(.text+0x1f20): undefined reference to `oniDeviceIsCommandSupported'
+OpenNIEngine.cpp:(.text+0x1f51): undefined reference to `oniDeviceIsPropertySupported'
+OpenNIEngine.cpp:(.text+0x2046): undefined reference to `oniFrameRelease'
+OpenNIEngine.cpp:(.text+0x2088): undefined reference to `oniDeviceIsPropertySupported'
+OpenNIEngine.cpp:(.text+0x20a0): undefined reference to `oniDeviceIsCommandSupported'
+OpenNIEngine.cpp:(.text+0x2118): undefined reference to `oniFrameRelease'
+Engine/libEngine.a(OpenNIEngine.cpp.o): In function `openni::OpenNI::waitForAnyStream(openni::VideoStream**, int, int*, int)':
+OpenNIEngine.cpp:(.text._ZN6openni6OpenNI16waitForAnyStreamEPPNS_11VideoStreamEiPii[_ZN6openni6OpenNI16waitForAnyStreamEPPNS_11VideoStreamEiPii]+0x64): undefined reference to `oniWaitForAnyStream'
+Engine/libEngine.a(OpenNIEngine.cpp.o): In function `openni::VideoStream::~VideoStream()':
+OpenNIEngine.cpp:(.text._ZN6openni11VideoStreamD2Ev[_ZN6openni11VideoStreamD5Ev]+0x7a): undefined reference to `oniStreamDestroy'
+Engine/libEngine.a(OpenNIEngine.cpp.o): In function `openni::Device::~Device()':
+OpenNIEngine.cpp:(.text._ZN6openni6DeviceD2Ev[_ZN6openni6DeviceD5Ev]+0xa4): undefined reference to `oniDeviceClose'
+collect2: error: ld returned 1 exit status
+make[2]: *** [InfiniTAM] Error 1
+make[1]: *** [CMakeFiles/InfiniTAM.dir/all] Error 2
+make: *** [all] Error 2
+
+I had to modify the Infintam/cmake/FindOpenNI file to find openni2 instead (just change the line that says "NAMES OpenNI" to "NAMES OpenNI2"). Otherwise, it links to OpenNI v1 but the include dir option in 
+
+cmake ../InfiniTAM -DOpenNI_INCLUDE_DIR=/usr/include/openni2
+
+makes it use the ONI2 headers, so lulz ensue. 
+
+I made a link called /usr/local/cuda pointed at /usr/local/cuda-8.0 so the ros infinitam part would work
+
+7/19/17
+
+Suspending the laptop and restarting the arm PC seems to have broken CUDA. 
+
+I0719 13:27:45.614343 10316 layer_factory.hpp:77] Creating layer input
+I0719 13:27:45.614397 10316 net.cpp:84] Creating Layer input
+I0719 13:27:45.614411 10316 net.cpp:380] input -> data
+F0719 13:27:45.617188 10316 syncedmem.hpp:22] Check failed: error == cudaSuccess (30 vs. 0)  unknown error
+*** Check failure stack trace: ***
+[detect_grasps_active-1] process has died [pid 10316, exit code -6, cmd /home/csrobot/Code/arm_wkspc/devel/lib/agile_grasp2/detect_grasps __name:=detect_grasps_active __log:=/home/csrobot/.ros/log/316e4b5c-6c9f-11e7-8fdc-000af768787e/detect_grasps_active-1.log].
+log file: /home/csrobot/.ros/log/316e4b5c-6c9f-11e7-8fdc-000af768787e/detect_grasps_active-1*.log
+all processes on machine have died, roslaunch will exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+
+This is slightly different from the previous error with the failed check, as that was cudaSuccess(35 == 0) and had a message beyond "unknown error"
+
+The computer appears to currently be running nvidia binary driver 375.66, and lists a ton of cuda stuff as not used:
+The following packages were automatically installed and are no longer required:
+  cuda-command-line-tools-8-0 cuda-core-8-0 cuda-cublas-8-0
+  cuda-cublas-dev-8-0 cuda-cudart-8-0 cuda-cudart-dev-8-0 cuda-cufft-8-0
+  cuda-cufft-dev-8-0 cuda-curand-8-0 cuda-curand-dev-8-0 cuda-cusolver-8-0
+  cuda-cusolver-dev-8-0 cuda-cusparse-8-0 cuda-cusparse-dev-8-0
+  cuda-documentation-8-0 cuda-driver-dev-8-0 cuda-license-8-0
+  cuda-misc-headers-8-0 cuda-npp-8-0 cuda-npp-dev-8-0 cuda-nvgraph-8-0
+  cuda-nvgraph-dev-8-0 cuda-nvml-dev-8-0 cuda-nvrtc-8-0 cuda-nvrtc-dev-8-0
+  cuda-samples-8-0 cuda-toolkit-8-0 cuda-visual-tools-8-0
+Use 'apt-get autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 113 not upgraded.
+
+I could theoretically apt-get install --reinstall cuda, but I'm not sure that would fix anything
+
+Gave it a shot anyway, and rebooted. 
+
+That seems to have fixed the problem. 
+
+
+7/20/17
+
+Left attempts to merge the old infinitam code in scooter2, now working on scan_strategy branch
+
+Step 1: Detect failure of the single-point mode
+
+Step 2: Plan an infinitam scan path
+
+Step 3: Execute the infinitam scan path 
+
+Step 4: Get the infintam scan cloud into the same frame as everything else
+
+Step 5: Try to get grasps on the infintam scan 
+
+Step 6: Try to execute that grasp
+
+
+7/24/17 
+
+Rebooted to try to get a new DHCP lease because the router lost power, so the USB subsystem is not working. lsusb sometimes hangs and won't die with anything less than a reboot. 
+
+Clearly, the cameras are not working in this state. 
+
+Ongoing problems with the network mean that I can't connect the scooter computer to the laptop. 
+
+Unplugging and replugging the cameras worked, but not the first time I did it. 
+
+So it's really just kind of random whether the cameras will work. 
+
+
+[baxter - http://thing2.local:11311] csrobot@scooter-arm:~/Code/arm_wkspc$ rosrun infinitam infinitam 
+[ WARN] [1500926507.912868471]: Reset tracker. Track count is at 1.
+
+[ INFO] [1500926507.912952278]: Waiting for volume signal.
+OpenNI: Initialization ... 
+
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  OpenNI: Device open failed!
+
+Aborted (core dumped)
+[baxter - http://thing2.local:11311] csrobot@scooter-arm:~/Code/arm_wkspc$ 
+
+And it sure looks like there's gonna be an OpenNI fight if you have both the structure node, for single-point views, and the infinitam node, for multi-views, in the same codebase. 
+
+Removed the infnitam stuff, setting up calibration. 
+
+Current startup invocations are:
+roslaunch active_sensing active_sensing.launch
+roslaunch scooter_launch two_cam.launch
+roslaunch openni2_launch openni2.launch camera:=structure
+rosrun cloud_registration cloud_registration 
+roslaunch agile_grasp2 fixed_detect_grasps_active.launch 
+roslaunch laser_detection_3d 3dlaser.launch 
+python src/active_sensing/scripts/active_sensing_driving.py 1 0
+
+Starting the calibration:
+EDIT THE LAUNCH FILE FIRST
+roslaunch scooter_launch three_cam_interactive.launch
+If it looks really bad, you probably have the cameras backwards

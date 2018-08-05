@@ -1,0 +1,20 @@
+- https://kislayabhi.github.io/Installing_CUDA_with_Ubuntu/ (busted)
+- https://askubuntu.com/questions/640577/install-cuda-7-0-on-ubuntu-14-04-2 (good)
+
+install version nvidia-340 (NOT 346)
+You will have to do a "...requires xxxx, but it will not be installed" before installing nvidia-cuda-toolkit
+
+
+install nvidia-libopencl1-340
+
+
+=====
+menu => drivers => install nvidia drivers
+https://developer.nvidia.com/cuda-80-ga2-download-archive
+install it
+sudo apt-get install cuda-8.0
+sudo apt-get update
+sudo apt-get upgrade
+
+export PATH=${PATH}:/usr/local/cuda-8.0/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-8.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
