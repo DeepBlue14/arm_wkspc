@@ -1,7 +1,7 @@
 # active_sensing
 
-* **Authors:** Marcus Gualteri, Andreas ten Pas, Abe Shultz
-* **Version:** 1.0.0
+* **Authors:** Marcus Gualteri, Andreas ten Pas, Abe Shultz, James Kuczynski
+* **Version:** 1.1.0
 
 
 # ActiveSensingDriving =====================================
@@ -32,6 +32,8 @@ Remember to start baxter.sh in ros_indigo_ws for each terminal.
 3. Launch the point cloud for the base sensor:
 
   roslaunch scooter_launch three_cam.launch
+  *OR*
+  roslaunch scooter_launch two_cam.launch
 
 5. Launch the agile_grasp grasp pose detection:
 
