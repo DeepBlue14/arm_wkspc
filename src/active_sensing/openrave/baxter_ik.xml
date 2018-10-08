@@ -2,6 +2,6 @@
   <manipulator name="left_arm"> 
     <base>left_arm_mount</base>
     <effector>left_gripper</effector>
-    <iksolver>/home/csrobot/Code/arm_wkspc/src/active_sensing/openrave/libik.so</iksolver>  
+    <iksolver>/home/james/Code/arm_wkspc/src/active_sensing/openrave/libik.so</iksolver>  
   </manipulator> 
 </robot> 

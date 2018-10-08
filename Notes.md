@@ -1,0 +1,3 @@
+- Power on york's OBP
+- Run ```nmap -sP 10.10.10.1/24``` to find the cart's IP
+- 

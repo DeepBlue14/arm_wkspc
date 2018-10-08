@@ -32,7 +32,7 @@ class CartesianMover:
     
     self.env = openravepy.Environment()
     self.env.StopSimulation()
-    openraveRoot = '/home/csrobot/Code/arm_ws/src/active_sensing/openrave/'
+    openraveRoot = '/home/james/Code/arm_ws/src/active_sensing/openrave/'
     self.env.Load(openraveRoot + "baxter_ik.xml")
     self.env.Load(openraveRoot + "table.xml")
     self.robot = self.env.GetRobots()[0]

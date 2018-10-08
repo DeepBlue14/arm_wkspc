@@ -50,7 +50,8 @@ baxter_hostname="thing2.local" #york
 # Set *Either* your computers ip address or hostname. Please note if using
 # your_hostname that this must be resolvable to Baxter.
 #your_ip="169.254.9.155"
-your_ip="10.10.10.101"
+#your_ip="10.10.10.101"
+your_ip="10.10.10.87"
 #your_hostname="scooter-arm.local"
 #your_hostname="robot-lab11.local"
 

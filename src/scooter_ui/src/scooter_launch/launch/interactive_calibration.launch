@@ -23,5 +23,5 @@
 	<!-- Beyond that is part of the Baxter TF tree, and so not my problem -->
 
 	<!-- Launch rviz with the interactive handles for tf -->
-	<node pkg="rviz" type="rviz" name="interactive_tf_rviz" args="-d /home/csrobot/.rviz/interactive_tf_calibration.rviz" />
+	<node pkg="rviz" type="rviz" name="interactive_tf_rviz" args="-d /home/james/.rviz/interactive_tf_calibration.rviz" />
 </launch>
